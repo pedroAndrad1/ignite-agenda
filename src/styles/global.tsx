@@ -1,8 +1,8 @@
 'use client'
 
-import { getCssText, globalCss } from "@pedroandrad1/react";
-import { useServerInsertedHTML } from "next/navigation";
-import { useState } from "react";
+import { getCssText, globalCss } from '@pedroandrad1/react'
+import { useServerInsertedHTML } from 'next/navigation'
+import { useState } from 'react'
 
 const globalStyles = globalCss({
   '*': {
@@ -19,20 +19,22 @@ const globalStyles = globalCss({
 })
 
 export function StitchesRegistry({ children }: { children: React.ReactNode }) {
-    const [isRendered, setIsRendered] = useState(false);
-  
-    useServerInsertedHTML(() => {
-      if (!isRendered) {
-        setIsRendered(true);
-        return (
-          <style 
-            id="stitches" 
-            dangerouslySetInnerHTML={{ __html: `${getCssText()} 
-            ${globalStyles()}` }} 
-          />
-        )
-      }
-    });
-  
-    return <>{children}</>;
-  }
+  const [isRendered, setIsRendered] = useState(false)
+
+  useServerInsertedHTML(() => {
+    if (!isRendered) {
+      setIsRendered(true)
+      return (
+        <style
+          id="stitches"
+          dangerouslySetInnerHTML={{
+            __html: `${getCssText()} 
+            ${globalStyles()}`,
+          }}
+        />
+      )
+    }
+  })
+
+  return <>{children}</>
+}

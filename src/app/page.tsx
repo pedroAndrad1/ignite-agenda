@@ -1,8 +1,6 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'
+import { Heading } from '@pedroandrad1/react'
 
 export default function Home() {
-  return (
-   <h1>Hello world</h1>
-  );
+  return <Heading as="h1">Hello world</Heading>
 }
