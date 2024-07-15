@@ -1,4 +1,4 @@
-import { Box, styled } from '@pedroandrad1/react'
+import { Box, styled, Text } from '@pedroandrad1/react'
 
 export const Form = styled(Box, {
   display: 'flex',
@@ -10,4 +10,15 @@ export const Form = styled(Box, {
   '@media(max-width: 600px)': {
     flexDirection: 'column',
   },
+})
+
+export const FormErrors = styled('div', {
+  marginTop: '$2',
+  [`>${Text}`]: {
+    color: 'gray400',
+  },
+})
+
+export const BlankText = styled('span', {
+  opacity: 0,
 })
