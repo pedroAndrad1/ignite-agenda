@@ -17,6 +17,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowRight } from 'phosphor-react'
 import { ErrorMessage } from '@/shared/components/ErrorMessage'
+import { useSearchParams } from 'next/navigation'
 
 const RegistroPasso1FormSchema = z.object({
   userName: z
@@ -32,12 +33,16 @@ const RegistroPasso1FormSchema = z.object({
 type RegistroPasso1FormData = z.infer<typeof RegistroPasso1FormSchema>
 
 export default function RegistroPasso1() {
+  const searchParams = useSearchParams()
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<RegistroPasso1FormData>({
     resolver: zodResolver(RegistroPasso1FormSchema),
+    defaultValues: {
+      userName: searchParams.get('userName') || '',
+    },
   })
 
   const handleFormRegistroPasso1 = (data: RegistroPasso1FormData) => {

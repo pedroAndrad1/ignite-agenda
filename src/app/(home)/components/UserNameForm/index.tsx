@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { GLOBAL_CONSTANTS } from '@/constants/global'
 import { BlankText } from '@/shared/components/BlankText'
 import { ErrorMessage } from '@/shared/components/ErrorMessage'
+import { useRouter } from 'next/navigation'
 
 const UserNameFormSchema = z.object({
   userName: z
@@ -21,13 +22,14 @@ export function UserNameForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<UserNameFormData>({
     resolver: zodResolver(UserNameFormSchema),
   })
+  const router = useRouter()
 
-  const handleUserNameForm = (data: UserNameFormData) => {
-    console.log(data)
+  const handleUserNameForm = async (data: UserNameFormData) => {
+    await router.push(`registro/passo-1?userName=${data.userName}`)
   }
 
   return (
@@ -39,7 +41,7 @@ export function UserNameForm() {
           containerProps={{ size: 'sm' }}
           {...register('userName')}
         />
-        <Button size={'sm'} type="submit">
+        <Button size={'sm'} type="submit" disabled={isSubmitting}>
           Reservar
           <ArrowRight />
         </Button>
