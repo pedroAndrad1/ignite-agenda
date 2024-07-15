@@ -1,13 +1,13 @@
 'use client'
 import { Heading, Text } from '@pedroandrad1/react'
-import { Container, Hero, Preview } from './styles'
+import { Hero, MainHome, Preview } from './styles'
 import Image from 'next/image'
 import previewImage from '../../assets/home-preview.svg'
 import { UserNameForm } from './components/UserNameForm'
 
 export default function Home() {
   return (
-    <Container>
+    <MainHome>
       <Hero>
         <Heading as={'h1'} size={'4xl'}>
           Agendamento descomplicado
@@ -27,6 +27,6 @@ export default function Home() {
           quality={100}
         ></Image>
       </Preview>
-    </Container>
+    </MainHome>
   )
 }

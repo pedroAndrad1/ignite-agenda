@@ -1,6 +1,6 @@
 import { Heading, styled, Text } from '@pedroandrad1/react'
 
-export const Container = styled('div', {
+export const MainHome = styled('main', {
   maxWidth: 'calc(100vw - (100vw - 1160px) / 2)',
   marginLeft: 'auto',
   height: '100vh',

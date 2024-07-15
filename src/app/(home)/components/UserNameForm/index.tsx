@@ -5,6 +5,7 @@ import { ArrowRight } from 'phosphor-react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { GLOBAL_CONSTANTS } from '@/constants/global'
 
 const UserNameFormSchema = z.object({
   userName: z
@@ -31,7 +32,7 @@ export function UserNameForm() {
     <>
       <Form as="form" onSubmit={handleSubmit(handleUserNameForm)}>
         <TextInput
-          prefix="ignite.agenda.com/"
+          prefix={GLOBAL_CONSTANTS.userNamePrefix}
           placeholder="seu-usuario"
           containerProps={{ size: 'sm' }}
           {...register('userName')}
