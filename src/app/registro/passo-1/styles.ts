@@ -32,3 +32,7 @@ export const FormRegistroPasso1 = styled(Box, {
     gap: '$2',
   },
 })
+
+export const FormError = styled(Text, {
+  color: '$error',
+})

@@ -18,7 +18,3 @@ export const FormErrors = styled('div', {
     color: 'gray400',
   },
 })
-
-export const BlankText = styled('span', {
-  opacity: 0,
-})

@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
-    "@pedroandrad1/react": "^2.2.2",
+    "@pedroandrad1/react": "^2.2.3",
     "@pedroandrad1/ts-config": "^2.0.1",
     "next": "14.2.5",
     "phosphor-react": "^1.4.1",
