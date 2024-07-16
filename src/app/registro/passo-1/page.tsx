@@ -18,6 +18,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowRight } from 'phosphor-react'
 import { ErrorMessage } from '@/shared/components/ErrorMessage'
 import { useSearchParams } from 'next/navigation'
+import { api } from '@/lib/axios'
 
 const RegistroPasso1FormSchema = z.object({
   userName: z
@@ -45,8 +46,12 @@ export default function RegistroPasso1() {
     },
   })
 
-  const handleFormRegistroPasso1 = (data: RegistroPasso1FormData) => {
-    console.log(data)
+  const handleFormRegistroPasso1 = async (data: RegistroPasso1FormData) => {
+    const res = await api.post('users', {
+      data,
+    })
+
+    console.log(res)
   }
 
   return (
