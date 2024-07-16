@@ -5,6 +5,7 @@ import {
   MultiStep,
   Text,
   TextInput,
+  Toast,
 } from '@pedroandrad1/react'
 import {
   FormRegistroPasso1,
@@ -19,6 +20,7 @@ import { ArrowRight } from 'phosphor-react'
 import { ErrorMessage } from '@/shared/components/ErrorMessage'
 import { useSearchParams } from 'next/navigation'
 import { api } from '@/lib/axios'
+import { useState } from 'react'
 
 const RegistroPasso1FormSchema = z.object({
   userName: z
@@ -35,6 +37,7 @@ type RegistroPasso1FormData = z.infer<typeof RegistroPasso1FormSchema>
 
 export default function RegistroPasso1() {
   const searchParams = useSearchParams()
+  const [toast, setToast] = useState(false)
   const {
     register,
     handleSubmit,
@@ -47,15 +50,24 @@ export default function RegistroPasso1() {
   })
 
   const handleFormRegistroPasso1 = async (data: RegistroPasso1FormData) => {
-    const res = await api.post('users', {
-      data,
-    })
-
-    console.log(res)
+    await api
+      .post('users', {
+        data,
+      })
+      .catch((err) => {
+        setToast(true)
+        return Promise.reject(err)
+      })
   }
 
   return (
     <MainRegistroPasso1>
+      <Toast
+        title="Ops..."
+        description="Alguém já usa esse nome de usuário. Por favor, escolha outro."
+        open={toast}
+        onOpenChange={setToast}
+      />
       <HeaderRegistroPasso1>
         <Heading as={'h1'}>Bem-vindo ao ignite call</Heading>
         <Text>
