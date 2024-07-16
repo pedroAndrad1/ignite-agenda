@@ -1,0 +1,3 @@
+export enum ERRORS {
+  USUARIO_JA_EXISTE = 'USUARIO_JA_EXISTE',
+}
