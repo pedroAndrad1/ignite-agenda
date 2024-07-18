@@ -36,7 +36,6 @@ export async function POST(request: NextRequest) {
   })
 
   return NextResponse.json(user, {
-    status: HttpStatusCode.BadRequest,
-    statusText: ERRORS.USUARIO_JA_EXISTE,
+    status: HttpStatusCode.Created,
   })
 }
