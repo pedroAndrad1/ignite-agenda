@@ -7,11 +7,7 @@ import {
   TextInput,
   Toast,
 } from '@pedroandrad1/react'
-import {
-  FormRegistroPasso1,
-  HeaderRegistroPasso1,
-  MainRegistroPasso1,
-} from './styles'
+import { FormCadastroUsuario } from './styles'
 import { GLOBAL_CONSTANTS } from '@/constants/global'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -21,8 +17,10 @@ import { ErrorMessage } from '@/shared/components/ErrorMessage'
 import { useSearchParams } from 'next/navigation'
 import { api } from '@/lib/axios'
 import { useState } from 'react'
+import { MainRegistro } from '../components/MainCadastroUsuario'
+import { HeaderRegistro } from '../components/HeaderRegistro'
 
-const RegistroPasso1FormSchema = z.object({
+const CadastroUsuarioFormSchema = z.object({
   userName: z
     .string()
     .min(3, { message: 'O usuário precisa ter pelo menos três caracteres.' })
@@ -33,23 +31,23 @@ const RegistroPasso1FormSchema = z.object({
     .string()
     .min(3, { message: 'O nome precisa ter pelo menos três letras.' }),
 })
-type RegistroPasso1FormData = z.infer<typeof RegistroPasso1FormSchema>
+type CadastroUsuarioFormData = z.infer<typeof CadastroUsuarioFormSchema>
 
-export default function RegistroPasso1() {
+export default function CadastroUsuario() {
   const searchParams = useSearchParams()
   const [toast, setToast] = useState(false)
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<RegistroPasso1FormData>({
-    resolver: zodResolver(RegistroPasso1FormSchema),
+  } = useForm<CadastroUsuarioFormData>({
+    resolver: zodResolver(CadastroUsuarioFormSchema),
     defaultValues: {
       userName: searchParams.get('userName') || '',
     },
   })
 
-  const handleFormRegistroPasso1 = async (data: RegistroPasso1FormData) => {
+  const handleFormCadastroUsuario = async (data: CadastroUsuarioFormData) => {
     await api
       .post('users', {
         data,
@@ -61,24 +59,24 @@ export default function RegistroPasso1() {
   }
 
   return (
-    <MainRegistroPasso1>
+    <MainRegistro>
       <Toast
         title="Ops..."
         description="Alguém já usa esse nome de usuário. Por favor, escolha outro."
         open={toast}
         onOpenChange={setToast}
       />
-      <HeaderRegistroPasso1>
+      <HeaderRegistro>
         <Heading as={'h1'}>Bem-vindo ao ignite call</Heading>
         <Text>
           Precisamos de algumas informações para criar seu perfil! Ah, você pode
           editar essas informações depois.
         </Text>
         <MultiStep size={4} currentStep={1} />
-      </HeaderRegistroPasso1>
-      <FormRegistroPasso1
+      </HeaderRegistro>
+      <FormCadastroUsuario
         as="form"
-        onSubmit={handleSubmit(handleFormRegistroPasso1)}
+        onSubmit={handleSubmit(handleFormCadastroUsuario)}
       >
         <label>
           <Text>Nome de usuário</Text>
@@ -101,7 +99,7 @@ export default function RegistroPasso1() {
           Próximo passo
           <ArrowRight />
         </Button>
-      </FormRegistroPasso1>
-    </MainRegistroPasso1>
+      </FormCadastroUsuario>
+    </MainRegistro>
   )
 }

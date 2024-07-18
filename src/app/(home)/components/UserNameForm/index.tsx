@@ -29,7 +29,7 @@ export function UserNameForm() {
   const router = useRouter()
 
   const handleUserNameForm = async (data: UserNameFormData) => {
-    await router.push(`registro/passo-1?userName=${data.userName}`)
+    await router.push(`registro/cadastro-usuario?userName=${data.userName}`)
   }
 
   return (
