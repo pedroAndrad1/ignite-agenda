@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { HeaderRegistro } from '../components/HeaderRegistro'
 import { ArrowRight } from 'phosphor-react'
 import { ConnectBox, ConnectItem } from './styles'
+import { signIn } from 'next-auth/react'
 
 export default function ConexaoGoogle() {
   const [toast, setToast] = useState(false)
@@ -28,7 +29,7 @@ export default function ConexaoGoogle() {
       <ConnectBox>
         <ConnectItem>
           <Text>Google Agenda</Text>
-          <Button variant={'secondary'}>
+          <Button variant={'secondary'} onClick={() => signIn('google')}>
             Conectar
             <ArrowRight />
           </Button>
