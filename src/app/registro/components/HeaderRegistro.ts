@@ -1,4 +1,4 @@
-import { Heading, styled } from '@pedroandrad1/react'
+import { Heading, styled, Text } from '@pedroandrad1/react'
 
 export const HeaderRegistro = styled('header', {
   padding: '$0 $6',

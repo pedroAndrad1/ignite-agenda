@@ -14,7 +14,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowRight } from 'phosphor-react'
 import { ErrorMessage } from '@/shared/components/ErrorMessage'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { api } from '@/lib/axios'
 import { useState } from 'react'
 import { MainRegistro } from '../components/MainCadastroUsuario'
@@ -35,6 +35,7 @@ type CadastroUsuarioFormData = z.infer<typeof CadastroUsuarioFormSchema>
 
 export default function CadastroUsuario() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const [toast, setToast] = useState(false)
   const {
     register,
@@ -51,6 +52,9 @@ export default function CadastroUsuario() {
     await api
       .post('users', {
         data,
+      })
+      .then(() => {
+        router.push('/registro/conexao-google')
       })
       .catch((err) => {
         setToast(true)
