@@ -37,20 +37,21 @@ const buildAuthOptions = (req: NextRequest): AuthOptions => {
 
         return true
       },
+      async session({ session, user }) {
+        return {
+          ...session,
+          user,
+        }
+      },
     },
   }
 }
 
-export async function POST(
+const handleHttp = (
   req: NextRequest,
   routeContext: { params: { nextauth: string[] } },
-) {
+) => {
   return NextAuth(req, routeContext, buildAuthOptions(req))
 }
 
-export async function GET(
-  req: NextRequest,
-  routeContext: { params: { nextauth: string[] } },
-) {
-  return NextAuth(req, routeContext, buildAuthOptions(req))
-}
+export { handleHttp as POST, handleHttp as GET }
