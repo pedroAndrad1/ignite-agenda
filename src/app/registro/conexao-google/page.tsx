@@ -2,19 +2,27 @@
 
 import { Button, Heading, MultiStep, Text, Toast } from '@pedroandrad1/react'
 import { MainRegistro } from '../components/MainCadastroUsuario'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { HeaderRegistro } from '../components/HeaderRegistro'
-import { ArrowRight } from 'phosphor-react'
+import { ArrowRight, Check } from 'phosphor-react'
 import { ConnectBox, ConnectItem } from './styles'
-import { signIn } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
+import { useSearchParams } from 'next/navigation'
 
 export default function ConexaoGoogle() {
+  const searchParams = useSearchParams()
   const [toast, setToast] = useState(false)
+  const session = useSession()
+  const error = searchParams.get('error')
+  const isAuthenticated = session.status === 'authenticated'
+
+  useEffect(() => (error ? setToast(true) : setToast(false)), [error, setToast])
+
   return (
     <MainRegistro>
       <Toast
         title="Ops..."
-        description="Alguém já usa esse nome de usuário. Por favor, escolha outro."
+        description="É necessário que autorize o acesso ao google calendar."
         open={toast}
         onOpenChange={setToast}
       />
@@ -29,12 +37,23 @@ export default function ConexaoGoogle() {
       <ConnectBox>
         <ConnectItem>
           <Text>Google Agenda</Text>
-          <Button variant={'secondary'} onClick={() => signIn('google')}>
-            Conectar
-            <ArrowRight />
-          </Button>
+          {isAuthenticated ? (
+            <Button disabled size={'sm'}>
+              Conectado
+              <Check />
+            </Button>
+          ) : (
+            <Button
+              size={'sm'}
+              variant={'secondary'}
+              onClick={() => signIn('google')}
+            >
+              Conectar
+              <ArrowRight />
+            </Button>
+          )}
         </ConnectItem>
-        <Button type="submit">
+        <Button type="submit" disabled={!isAuthenticated}>
           Próximo passo
           <ArrowRight />
         </Button>
