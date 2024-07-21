@@ -21,7 +21,7 @@ import { MainRegistro } from '../components/MainCadastroUsuario'
 import { HeaderRegistro } from '../components/HeaderRegistro'
 
 const CadastroUsuarioFormSchema = z.object({
-  userName: z
+  username: z
     .string()
     .min(3, { message: 'O usuário precisa ter pelo menos três caracteres.' })
     .regex(/^([a-z\\\\-]+)$/i, {
@@ -44,7 +44,7 @@ export default function CadastroUsuario() {
   } = useForm<CadastroUsuarioFormData>({
     resolver: zodResolver(CadastroUsuarioFormSchema),
     defaultValues: {
-      userName: searchParams.get('userName') || '',
+      username: searchParams.get('username') || '',
     },
   })
 
@@ -86,10 +86,10 @@ export default function CadastroUsuario() {
           <Text>Nome de usuário</Text>
           <TextInput
             prefix={GLOBAL_CONSTANTS.userNamePrefix}
-            {...register('userName')}
+            {...register('username')}
           />
-          {errors.userName ? (
-            <ErrorMessage>{errors.userName.message}</ErrorMessage>
+          {errors.username ? (
+            <ErrorMessage>{errors.username.message}</ErrorMessage>
           ) : null}
         </label>
         <label>

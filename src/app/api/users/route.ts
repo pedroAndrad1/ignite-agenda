@@ -6,11 +6,11 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   const json = await request.json()
-  const { userName, nomeCompleto } = json.data
+  const { username, nomeCompleto } = json.data
 
   const userNameAlreadyTaken = await prisma.user.findUnique({
     where: {
-      userName,
+      username,
     },
   })
 
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
   const user = await prisma.user.create({
     data: {
-      userName,
+      username,
       name: nomeCompleto,
     },
   })

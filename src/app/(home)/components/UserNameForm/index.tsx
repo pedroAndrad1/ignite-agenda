@@ -11,7 +11,7 @@ import { ErrorMessage } from '@/shared/components/ErrorMessage'
 import { useRouter } from 'next/navigation'
 
 const UserNameFormSchema = z.object({
-  userName: z
+  username: z
     .string()
     .min(3, { message: 'Mínimo de três caracteres.' })
     .regex(/^([a-z\\\\-]+)$/i, { message: 'Apenas letras.' }),
@@ -29,7 +29,7 @@ export function UserNameForm() {
   const router = useRouter()
 
   const handleUserNameForm = (data: UserNameFormData) => {
-    router.push(`registro/cadastro-usuario?userName=${data.userName}`)
+    router.push(`registro/cadastro-usuario?username=${data.username}`)
   }
 
   return (
@@ -39,7 +39,7 @@ export function UserNameForm() {
           prefix={GLOBAL_CONSTANTS.userNamePrefix}
           placeholder="seu-usuario"
           containerProps={{ size: 'sm' }}
-          {...register('userName')}
+          {...register('username')}
         />
         <Button size={'sm'} type="submit" disabled={isSubmitting}>
           Reservar
@@ -47,8 +47,8 @@ export function UserNameForm() {
         </Button>
       </Form>
       <FormErrors>
-        {errors.userName ? (
-          <ErrorMessage>{errors.userName.message}</ErrorMessage>
+        {errors.username ? (
+          <ErrorMessage>{errors.username.message}</ErrorMessage>
         ) : (
           <BlankText aria-hidden />
         )}
