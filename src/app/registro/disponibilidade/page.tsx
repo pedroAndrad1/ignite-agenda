@@ -20,9 +20,40 @@ import {
   DisponibilidadeFormItem,
   HoursInputContainer,
 } from './styles'
+import { useFieldArray, useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { getDiaDaSemana } from '@/shared/utils/getDiaDaSemana'
+
+const DisponibilidadeFormSchema = z.object({})
+type DisponibilidadeFormData = z.infer<typeof DisponibilidadeFormSchema>
 
 export default function Disponibilidade() {
   const [toast, setToast] = useState(false)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    control,
+  } = useForm({
+    defaultValues: {
+      intervalos: [
+        { diaDaSemana: 0, enabled: false, inicio: '08:00', fim: '18:00' },
+        { diaDaSemana: 1, enabled: true, inicio: '08:00', fim: '18:00' },
+        { diaDaSemana: 2, enabled: true, inicio: '08:00', fim: '18:00' },
+        { diaDaSemana: 3, enabled: true, inicio: '08:00', fim: '18:00' },
+        { diaDaSemana: 4, enabled: true, inicio: '08:00', fim: '18:00' },
+        { diaDaSemana: 5, enabled: true, inicio: '08:00', fim: '18:00' },
+        { diaDaSemana: 6, enabled: false, inicio: '08:00', fim: '18:00' },
+      ],
+    },
+  })
+
+  const { fields } = useFieldArray({
+    name: 'intervalos',
+    control,
+  })
+
+  const diasDaSemana = getDiaDaSemana()
 
   return (
     <MainRegistro>
@@ -42,42 +73,30 @@ export default function Disponibilidade() {
       </HeaderRegistro>
       <DisponibilidadeBox>
         <DisponibilidadeForm as="form">
-          <DisponibilidadeFormItem>
-            <DayInputContainer>
-              <Checkbox />
-              <Text>Segunda-Feira</Text>
-            </DayInputContainer>
-            <HoursInputContainer>
-              <TextInput
-                containerProps={{ size: 'sm' }}
-                type="time"
-                step={60}
-              />
-              <TextInput
-                containerProps={{ size: 'sm' }}
-                type="time"
-                step={60}
-              />
-            </HoursInputContainer>
-          </DisponibilidadeFormItem>
-          <DisponibilidadeFormItem>
-            <DayInputContainer>
-              <Checkbox />
-              <Text>Terça-Feira</Text>
-            </DayInputContainer>
-            <HoursInputContainer>
-              <TextInput
-                containerProps={{ size: 'sm' }}
-                type="time"
-                step={60}
-              />
-              <TextInput
-                containerProps={{ size: 'sm' }}
-                type="time"
-                step={60}
-              />
-            </HoursInputContainer>
-          </DisponibilidadeFormItem>
+          {fields.map((field, index) => {
+            return (
+              <DisponibilidadeFormItem key={field.id}>
+                <DayInputContainer>
+                  <Checkbox />
+                  <Text>{diasDaSemana[field.diaDaSemana]}</Text>
+                </DayInputContainer>
+                <HoursInputContainer>
+                  <TextInput
+                    containerProps={{ size: 'sm' }}
+                    type="time"
+                    step={60}
+                    {...register(`intervalos.${index}.inicio`)}
+                  />
+                  <TextInput
+                    containerProps={{ size: 'sm' }}
+                    type="time"
+                    step={60}
+                    {...register(`intervalos.${index}.fim`)}
+                  />
+                </HoursInputContainer>
+              </DisponibilidadeFormItem>
+            )
+          })}
         </DisponibilidadeForm>
         <Button type="submit">
           Próximo passo
