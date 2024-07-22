@@ -20,7 +20,7 @@ import {
   DisponibilidadeFormItem,
   HoursInputContainer,
 } from './styles'
-import { useFieldArray, useForm } from 'react-hook-form'
+import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { getDiaDaSemana } from '@/shared/utils/getDiaDaSemana'
 
@@ -34,6 +34,7 @@ export default function Disponibilidade() {
     handleSubmit,
     formState: { errors, isSubmitting },
     control,
+    watch,
   } = useForm({
     defaultValues: {
       intervalos: [
@@ -54,6 +55,7 @@ export default function Disponibilidade() {
   })
 
   const diasDaSemana = getDiaDaSemana()
+  const intervalos = watch('intervalos')
 
   return (
     <MainRegistro>
@@ -77,7 +79,18 @@ export default function Disponibilidade() {
             return (
               <DisponibilidadeFormItem key={field.id}>
                 <DayInputContainer>
-                  <Checkbox />
+                  <Controller
+                    name={`intervalos.${index}.enabled`}
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        onCheckedChange={(checked) =>
+                          field.onChange(checked === true)
+                        }
+                        checked={field.value}
+                      />
+                    )}
+                  />
                   <Text>{diasDaSemana[field.diaDaSemana]}</Text>
                 </DayInputContainer>
                 <HoursInputContainer>
@@ -86,12 +99,14 @@ export default function Disponibilidade() {
                     type="time"
                     step={60}
                     {...register(`intervalos.${index}.inicio`)}
+                    disabled={!intervalos[index].enabled}
                   />
                   <TextInput
                     containerProps={{ size: 'sm' }}
                     type="time"
                     step={60}
                     {...register(`intervalos.${index}.fim`)}
+                    disabled={!intervalos[index].enabled}
                   />
                 </HoursInputContainer>
               </DisponibilidadeFormItem>
