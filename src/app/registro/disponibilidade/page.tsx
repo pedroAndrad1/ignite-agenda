@@ -10,7 +10,7 @@ import {
   Toast,
 } from '@pedroandrad1/react'
 import { MainRegistro } from '../components/MainCadastroUsuario'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { HeaderRegistro } from '../components/HeaderRegistro'
 import { ArrowRight } from 'phosphor-react'
 import {
@@ -23,8 +23,25 @@ import {
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { getDiaDaSemana } from '@/shared/utils/getDiaDaSemana'
+import { zodResolver } from '@hookform/resolvers/zod'
 
-const DisponibilidadeFormSchema = z.object({})
+const DisponibilidadeFormSchema = z.object({
+  intervalos: z
+    .array(
+      z.object({
+        diaDaSemana: z.number().min(0).max(6),
+        enabled: z.boolean(),
+        inicio: z.string(),
+        fim: z.string(),
+      }),
+    )
+    .transform((intervalos) =>
+      intervalos.filter((intervalo) => intervalo.enabled),
+    )
+    .refine((intervalos) => intervalos.length > 0, {
+      message: 'É necessário selecionar pelo menos um dia.',
+    }),
+})
 type DisponibilidadeFormData = z.infer<typeof DisponibilidadeFormSchema>
 
 export default function Disponibilidade() {
@@ -35,7 +52,8 @@ export default function Disponibilidade() {
     formState: { errors, isSubmitting },
     control,
     watch,
-  } = useForm({
+  } = useForm<DisponibilidadeFormData>({
+    resolver: zodResolver(DisponibilidadeFormSchema),
     defaultValues: {
       intervalos: [
         { diaDaSemana: 0, enabled: false, inicio: '08:00', fim: '18:00' },
@@ -57,11 +75,20 @@ export default function Disponibilidade() {
   const diasDaSemana = getDiaDaSemana()
   const intervalos = watch('intervalos')
 
+  const handleDisponibilidadeFormSubmit = (data: DisponibilidadeFormData) => {
+    console.log(data)
+  }
+
+  useEffect(
+    () => (errors.intervalos ? setToast(true) : setToast(false)),
+    [errors],
+  )
+
   return (
     <MainRegistro>
       <Toast
         title="Ops..."
-        description="É necessário que autorize o acesso ao google calendar."
+        description={errors.intervalos?.root?.message ?? 'Erro de validação.'}
         open={toast}
         onOpenChange={setToast}
       />
@@ -74,7 +101,10 @@ export default function Disponibilidade() {
         <MultiStep size={4} currentStep={3} />
       </HeaderRegistro>
       <DisponibilidadeBox>
-        <DisponibilidadeForm as="form">
+        <DisponibilidadeForm
+          as="form"
+          onSubmit={handleSubmit(handleDisponibilidadeFormSubmit)}
+        >
           {fields.map((field, index) => {
             return (
               <DisponibilidadeFormItem key={field.id}>
@@ -112,11 +142,11 @@ export default function Disponibilidade() {
               </DisponibilidadeFormItem>
             )
           })}
+          <Button type="submit" disabled={isSubmitting}>
+            Próximo passo
+            <ArrowRight />
+          </Button>
         </DisponibilidadeForm>
-        <Button type="submit">
-          Próximo passo
-          <ArrowRight />
-        </Button>
       </DisponibilidadeBox>
     </MainRegistro>
   )

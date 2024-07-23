@@ -1,17 +1,15 @@
 import { Box, styled } from '@pedroandrad1/react'
 
 export const DisponibilidadeBox = styled(Box, {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '$4',
   marginTop: '$6',
   border: '1px solid $gray600',
 })
 
 export const DisponibilidadeForm = styled(Box, {
-  border: '1px solid $gray600',
-  borderRadius: '$md',
+  display: 'flex',
+  flexDirection: 'column',
   padding: '0 !important',
+  border: 'none !important',
 })
 
 export const DisponibilidadeFormItem = styled('div', {
@@ -22,6 +20,23 @@ export const DisponibilidadeFormItem = styled('div', {
 
   '& + &': {
     borderTop: '1px solid $gray600',
+    borderLeft: '1px solid $gray600',
+    borderRight: '1px solid $gray600',
+  },
+
+  '&:first-of-type': {
+    borderTop: '1px solid $gray600',
+    borderLeft: '1px solid $gray600',
+    borderRight: '1px solid $gray600',
+    borderTopLeftRadius: '$md',
+    borderTopRightRadius: '$md',
+  },
+
+  '&:last-of-type': {
+    borderBottom: '1px solid $gray600',
+    borderBottomLeftRadius: '$md',
+    borderBottomRightRadius: '$md',
+    marginBottom: '$4',
   },
 
   '@media(max-width: 400px)': {
