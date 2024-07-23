@@ -1,12 +1,11 @@
 import { Adapter } from 'next-auth/adapters'
 import { prisma } from '../prisma'
-import { NextRequest } from 'next/server'
 import { cookies } from 'next/headers'
 
-export function PrismaCustomAdapter(req: NextRequest): Adapter {
+export function PrismaCustomAdapter(): Adapter {
   return {
     async createUser(user) {
-      const userIdInCookies = req.cookies.get('@igniteAgenda:userId')?.value
+      const userIdInCookies = cookies().get('@igniteAgenda:userId')?.value
       if (!userIdInCookies) {
         throw new Error('O cookie "@igniteAgenda:userId" não existe.')
       }

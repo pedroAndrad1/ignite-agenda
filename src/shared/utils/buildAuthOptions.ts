@@ -1,11 +1,10 @@
 import { PrismaCustomAdapter } from '@/lib/auth/prisma-custom-adpter'
 import { AuthOptions } from 'next-auth'
 import GoogleProvider, { GoogleProfile } from 'next-auth/providers/google'
-import { NextRequest } from 'next/server'
 
-export const buildAuthOptions = (req: NextRequest): AuthOptions => {
+export const buildAuthOptions = (): AuthOptions => {
   return {
-    adapter: PrismaCustomAdapter(req),
+    adapter: PrismaCustomAdapter(),
     providers: [
       GoogleProvider({
         clientId: process.env.GOOGLE_CLIENT_ID as string,

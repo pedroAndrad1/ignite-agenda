@@ -6,7 +6,7 @@ const handleHttp = (
   req: NextRequest,
   routeContext: { params: { nextauth: string[] } },
 ) => {
-  return NextAuth(req, routeContext, buildAuthOptions(req))
+  return NextAuth(req, routeContext, buildAuthOptions())
 }
 
 export { handleHttp as POST, handleHttp as GET }
