@@ -24,6 +24,7 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { getDiaDaSemana } from '@/shared/utils/getDiaDaSemana'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { convertStringHoraToMinutoNumber } from '@/shared/utils/convertStringHoraToMinutoNumber'
 
 const DisponibilidadeFormSchema = z.object({
   intervalos: z
@@ -40,9 +41,19 @@ const DisponibilidadeFormSchema = z.object({
     )
     .refine((intervalos) => intervalos.length > 0, {
       message: 'É necessário selecionar pelo menos um dia.',
-    }),
+    })
+    .transform((intervalos) =>
+      intervalos.map((intervalo) => {
+        return {
+          diaDaSemana: intervalo.diaDaSemana,
+          inicioEmMinutos: convertStringHoraToMinutoNumber(intervalo.inicio),
+          fimEmMinutos: convertStringHoraToMinutoNumber(intervalo.fim),
+        }
+      }),
+    ),
 })
-type DisponibilidadeFormData = z.infer<typeof DisponibilidadeFormSchema>
+type DisponibilidadeFormDataInput = z.input<typeof DisponibilidadeFormSchema>
+type DisponibilidadeFormDataOutput = z.output<typeof DisponibilidadeFormSchema>
 
 export default function Disponibilidade() {
   const [toast, setToast] = useState(false)
@@ -52,7 +63,11 @@ export default function Disponibilidade() {
     formState: { errors, isSubmitting },
     control,
     watch,
-  } = useForm<DisponibilidadeFormData>({
+  } = useForm<
+    DisponibilidadeFormDataInput,
+    unknown,
+    DisponibilidadeFormDataOutput
+  >({
     resolver: zodResolver(DisponibilidadeFormSchema),
     defaultValues: {
       intervalos: [
@@ -75,7 +90,9 @@ export default function Disponibilidade() {
   const diasDaSemana = getDiaDaSemana()
   const intervalos = watch('intervalos')
 
-  const handleDisponibilidadeFormSubmit = (data: DisponibilidadeFormData) => {
+  const handleDisponibilidadeFormSubmit = (
+    data: DisponibilidadeFormDataOutput,
+  ) => {
     console.log(data)
   }
 
