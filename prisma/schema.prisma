@@ -20,6 +20,7 @@ model User {
 
   accounts Account[]
   sessions Session[]
+  horarios Horarios[]
 
   @@map("users")
 }
@@ -53,4 +54,14 @@ model Session {
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("sessions")
+}
+
+model Horarios {
+  id                String @id @default(uuid())
+  dia_da_semana     Int
+  inicio_em_minutos Int
+  fim_em_minutos    Int
+
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id String
 }
