@@ -27,7 +27,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { convertStringHoraToMinutoNumber } from '@/shared/utils/convertStringHoraToMinutoNumber'
 
 const DisponibilidadeFormSchema = z.object({
-  intervalos: z
+  horarios: z
     .array(
       z.object({
         diaDaSemana: z.number().min(0).max(6),
@@ -36,14 +36,12 @@ const DisponibilidadeFormSchema = z.object({
         fim: z.string(),
       }),
     )
-    .transform((intervalos) =>
-      intervalos.filter((intervalo) => intervalo.enabled),
-    )
-    .refine((intervalos) => intervalos.length > 0, {
+    .transform((horarios) => horarios.filter((intervalo) => intervalo.enabled))
+    .refine((horarios) => horarios.length > 0, {
       message: 'É necessário selecionar pelo menos um dia.',
     })
-    .transform((intervalos) =>
-      intervalos.map((intervalo) => {
+    .transform((horarios) =>
+      horarios.map((intervalo) => {
         return {
           diaDaSemana: intervalo.diaDaSemana,
           inicioEmMinutos: convertStringHoraToMinutoNumber(intervalo.inicio),
@@ -70,7 +68,7 @@ export default function Disponibilidade() {
   >({
     resolver: zodResolver(DisponibilidadeFormSchema),
     defaultValues: {
-      intervalos: [
+      horarios: [
         { diaDaSemana: 0, enabled: false, inicio: '08:00', fim: '18:00' },
         { diaDaSemana: 1, enabled: true, inicio: '08:00', fim: '18:00' },
         { diaDaSemana: 2, enabled: true, inicio: '08:00', fim: '18:00' },
@@ -83,12 +81,12 @@ export default function Disponibilidade() {
   })
 
   const { fields } = useFieldArray({
-    name: 'intervalos',
+    name: 'horarios',
     control,
   })
 
   const diasDaSemana = getDiaDaSemana()
-  const intervalos = watch('intervalos')
+  const horarios = watch('horarios')
 
   const handleDisponibilidadeFormSubmit = (
     data: DisponibilidadeFormDataOutput,
@@ -97,7 +95,7 @@ export default function Disponibilidade() {
   }
 
   useEffect(
-    () => (errors.intervalos ? setToast(true) : setToast(false)),
+    () => (errors.horarios ? setToast(true) : setToast(false)),
     [errors],
   )
 
@@ -105,7 +103,7 @@ export default function Disponibilidade() {
     <MainRegistro>
       <Toast
         title="Ops..."
-        description={errors.intervalos?.root?.message ?? 'Erro de validação.'}
+        description={errors.horarios?.root?.message ?? 'Erro de validação.'}
         open={toast}
         onOpenChange={setToast}
       />
@@ -127,7 +125,7 @@ export default function Disponibilidade() {
               <DisponibilidadeFormItem key={field.id}>
                 <DayInputContainer>
                   <Controller
-                    name={`intervalos.${index}.enabled`}
+                    name={`horarios.${index}.enabled`}
                     control={control}
                     render={({ field }) => (
                       <Checkbox
@@ -145,15 +143,15 @@ export default function Disponibilidade() {
                     containerProps={{ size: 'sm' }}
                     type="time"
                     step={60}
-                    {...register(`intervalos.${index}.inicio`)}
-                    disabled={!intervalos[index].enabled}
+                    {...register(`horarios.${index}.inicio`)}
+                    disabled={!horarios[index].enabled}
                   />
                   <TextInput
                     containerProps={{ size: 'sm' }}
                     type="time"
                     step={60}
-                    {...register(`intervalos.${index}.fim`)}
-                    disabled={!intervalos[index].enabled}
+                    {...register(`horarios.${index}.fim`)}
+                    disabled={!horarios[index].enabled}
                   />
                 </HoursInputContainer>
               </DisponibilidadeFormItem>
