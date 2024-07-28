@@ -7,10 +7,9 @@ import {
   MultiStep,
   Text,
   TextInput,
-  Toast,
 } from '@pedroandrad1/react'
 import { MainRegistro } from '../components/MainCadastroUsuario'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { HeaderRegistro } from '../components/HeaderRegistro'
 import { ArrowRight } from 'phosphor-react'
 import {
@@ -26,6 +25,7 @@ import { getDiaDaSemana } from '@/shared/utils/getDiaDaSemana'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { convertStringHoraToMinutoNumber } from '@/shared/utils/convertStringHoraToMinutoNumber'
 import { api } from '@/lib/axios'
+import { useToast } from '@/shared/contexts/ToastContext'
 
 const DisponibilidadeFormSchema = z.object({
   horarios: z
@@ -65,8 +65,7 @@ type DisponibilidadeFormDataInput = z.input<typeof DisponibilidadeFormSchema>
 type DisponibilidadeFormDataOutput = z.output<typeof DisponibilidadeFormSchema>
 
 export default function Disponibilidade() {
-  const [toast, setToast] = useState(false)
-  const [toastDescription, setToastDescription] = useState('')
+  const { toast } = useToast()
   const {
     register,
     handleSubmit,
@@ -106,36 +105,26 @@ export default function Disponibilidade() {
     await api
       .post('horarios', data.horarios)
       .then(() => {
-        setToastDescription('Horários salvos com sucesso.')
-        setToast(true)
+        toast('Horários salvos com sucesso.', 'Parabéns!')
       })
       .catch(() => {
-        setToastDescription(
+        toast(
           'Ocorreu um problema ao salvar os horários. Tente novamente mais tarde.',
         )
-        setToast(true)
       })
   }
 
+  const teste = () => toast('TESTE', 'TESTE')
+
   useEffect(() => {
-    if (errors.horarios) {
-      setToastDescription(
-        errors.horarios?.root?.message ?? 'Erro de validação.',
-      )
-      setToast(true)
-    } else {
-      setToast(false)
-    }
-  }, [errors])
+    if (errors.horarios)
+      toast(errors.horarios?.root?.message ?? 'Erro de validação.')
+  }, [errors, toast])
 
   return (
     <MainRegistro>
-      <Toast
-        title="Ops..."
-        description={toastDescription}
-        open={toast}
-        onOpenChange={setToast}
-      />
+      <button onClick={() => teste()}>TESTE</button>
+
       <HeaderRegistro>
         <Heading as={'h1'}>Quase lá</Heading>
         <Text>

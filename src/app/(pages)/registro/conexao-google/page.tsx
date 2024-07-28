@@ -1,31 +1,28 @@
 'use client'
 
-import { Button, Heading, MultiStep, Text, Toast } from '@pedroandrad1/react'
+import { Button, Heading, MultiStep, Text } from '@pedroandrad1/react'
 import { MainRegistro } from '../components/MainCadastroUsuario'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { HeaderRegistro } from '../components/HeaderRegistro'
 import { ArrowRight, Check } from 'phosphor-react'
 import { ConnectBox, ConnectItem } from './styles'
 import { signIn, useSession } from 'next-auth/react'
 import { useSearchParams } from 'next/navigation'
+import { useToast } from '@/shared/contexts/ToastContext'
 
 export default function ConexaoGoogle() {
   const searchParams = useSearchParams()
-  const [toast, setToast] = useState(false)
+  const { toast } = useToast()
   const session = useSession()
   const error = searchParams.get('error')
   const isAuthenticated = session.status === 'authenticated'
 
-  useEffect(() => (error ? setToast(true) : setToast(false)), [error, setToast])
+  useEffect(() => {
+    if (error) toast('É necessário que autorize o acesso ao google calendar.')
+  }, [error, toast])
 
   return (
     <MainRegistro>
-      <Toast
-        title="Ops..."
-        description="É necessário que autorize o acesso ao google calendar."
-        open={toast}
-        onOpenChange={setToast}
-      />
       <HeaderRegistro>
         <Heading as={'h1'}>Conecte sua agenda!</Heading>
         <Text>

@@ -5,7 +5,6 @@ import {
   MultiStep,
   Text,
   TextInput,
-  Toast,
 } from '@pedroandrad1/react'
 import { FormCadastroUsuario } from './styles'
 import { GLOBAL_CONSTANTS } from '@/constants/global'
@@ -16,9 +15,9 @@ import { ArrowRight } from 'phosphor-react'
 import { ErrorMessage } from '@/shared/components/ErrorMessage'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { api } from '@/lib/axios'
-import { useState } from 'react'
 import { MainRegistro } from '../components/MainCadastroUsuario'
 import { HeaderRegistro } from '../components/HeaderRegistro'
+import { useToast } from '@/shared/contexts/ToastContext'
 
 const CadastroUsuarioFormSchema = z.object({
   username: z
@@ -34,9 +33,9 @@ const CadastroUsuarioFormSchema = z.object({
 type CadastroUsuarioFormData = z.infer<typeof CadastroUsuarioFormSchema>
 
 export default function CadastroUsuario() {
+  const { toast } = useToast()
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [toast, setToast] = useState(false)
   const {
     register,
     handleSubmit,
@@ -57,19 +56,13 @@ export default function CadastroUsuario() {
         router.push('/registro/conexao-google')
       })
       .catch((err) => {
-        setToast(true)
+        toast('Alguém já usa esse nome de usuário. Por favor, escolha outro.')
         return Promise.reject(err)
       })
   }
 
   return (
     <MainRegistro>
-      <Toast
-        title="Ops..."
-        description="Alguém já usa esse nome de usuário. Por favor, escolha outro."
-        open={toast}
-        onOpenChange={setToast}
-      />
       <HeaderRegistro>
         <Heading as={'h1'}>Bem-vindo ao ignite call</Heading>
         <Text>
