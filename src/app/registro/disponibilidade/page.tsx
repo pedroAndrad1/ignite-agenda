@@ -25,6 +25,7 @@ import { z } from 'zod'
 import { getDiaDaSemana } from '@/shared/utils/getDiaDaSemana'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { convertStringHoraToMinutoNumber } from '@/shared/utils/convertStringHoraToMinutoNumber'
+import { api } from '@/lib/axios'
 
 const DisponibilidadeFormSchema = z.object({
   horarios: z
@@ -48,6 +49,16 @@ const DisponibilidadeFormSchema = z.object({
           fimEmMinutos: convertStringHoraToMinutoNumber(intervalo.fim),
         }
       }),
+    )
+    .refine(
+      (horarios) =>
+        horarios.every(
+          (horario) => horario.fimEmMinutos >= horario.inicioEmMinutos + 60,
+        ),
+      {
+        message:
+          'É necessário haver pelo menos uma diferença de 1 hora entre o início e o fim de um horário',
+      },
     ),
 })
 type DisponibilidadeFormDataInput = z.input<typeof DisponibilidadeFormSchema>
@@ -55,6 +66,7 @@ type DisponibilidadeFormDataOutput = z.output<typeof DisponibilidadeFormSchema>
 
 export default function Disponibilidade() {
   const [toast, setToast] = useState(false)
+  const [toastDescription, setToastDescription] = useState('')
   const {
     register,
     handleSubmit,
@@ -88,22 +100,39 @@ export default function Disponibilidade() {
   const diasDaSemana = getDiaDaSemana()
   const horarios = watch('horarios')
 
-  const handleDisponibilidadeFormSubmit = (
+  const handleDisponibilidadeFormSubmit = async (
     data: DisponibilidadeFormDataOutput,
   ) => {
-    console.log(data)
+    await api
+      .post('horarios', data.horarios)
+      .then(() => {
+        setToastDescription('Horários salvos com sucesso.')
+        setToast(true)
+      })
+      .catch(() => {
+        setToastDescription(
+          'Ocorreu um problema ao salvar os horários. Tente novamente mais tarde.',
+        )
+        setToast(true)
+      })
   }
 
-  useEffect(
-    () => (errors.horarios ? setToast(true) : setToast(false)),
-    [errors],
-  )
+  useEffect(() => {
+    if (errors.horarios) {
+      setToastDescription(
+        errors.horarios?.root?.message ?? 'Erro de validação.',
+      )
+      setToast(true)
+    } else {
+      setToast(false)
+    }
+  }, [errors])
 
   return (
     <MainRegistro>
       <Toast
         title="Ops..."
-        description={errors.horarios?.root?.message ?? 'Erro de validação.'}
+        description={toastDescription}
         open={toast}
         onOpenChange={setToast}
       />
