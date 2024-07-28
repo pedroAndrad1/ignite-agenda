@@ -114,8 +114,6 @@ export default function Disponibilidade() {
       })
   }
 
-  const teste = () => toast('TESTE', 'TESTE')
-
   useEffect(() => {
     if (errors.horarios)
       toast(errors.horarios?.root?.message ?? 'Erro de validação.')
@@ -123,8 +121,6 @@ export default function Disponibilidade() {
 
   return (
     <MainRegistro>
-      <button onClick={() => teste()}>TESTE</button>
-
       <HeaderRegistro>
         <Heading as={'h1'}>Quase lá</Heading>
         <Text>

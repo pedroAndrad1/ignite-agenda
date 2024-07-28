@@ -21,8 +21,6 @@ export function ToastContextProvider({ children }: ToastContextProviderProps) {
   const [description, setDescription] = useState('ytesta')
 
   const toast = (descricao: string, titulo?: string) => {
-    console.log('toast')
-
     setTitle(titulo ?? 'Ops...')
     setDescription(descricao)
     onOpenChange(true)
