@@ -26,6 +26,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { convertStringHoraToMinutoNumber } from '@/shared/utils/convertStringHoraToMinutoNumber'
 import { api } from '@/lib/axios'
 import { useToast } from '@/shared/contexts/ToastContext'
+import { useRouter } from 'next/navigation'
 
 const DisponibilidadeFormSchema = z.object({
   horarios: z
@@ -66,6 +67,7 @@ type DisponibilidadeFormDataOutput = z.output<typeof DisponibilidadeFormSchema>
 
 export default function Disponibilidade() {
   const { toast } = useToast()
+  const router = useRouter()
   const {
     register,
     handleSubmit,
@@ -105,7 +107,7 @@ export default function Disponibilidade() {
     await api
       .post('horarios', data.horarios)
       .then(() => {
-        toast('Horários salvos com sucesso.', 'Parabéns!')
+        router.push('/registro/sobre-voce')
       })
       .catch(() => {
         toast(

@@ -1,11 +1,14 @@
 import { prisma } from '@/lib/prisma'
 import { ERRORS } from '@/shared/constants/errors'
+import { buildAuthOptions } from '@/shared/utils/buildAuthOptions'
 import { HttpStatusCode } from 'axios'
+import { getServerSession } from 'next-auth'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 
-export async function POST(request: NextRequest) {
-  const json = await request.json()
+export async function POST(req: NextRequest) {
+  const json = await req.json()
   const { username, nomeCompleto } = json.data
 
   const userNameAlreadyTaken = await prisma.user.findUnique({
@@ -38,4 +41,39 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(user, {
     status: HttpStatusCode.Created,
   })
+}
+
+const UpdateUserSchema = z.object({
+  bio: z.string(),
+})
+export async function PUT(req: NextRequest) {
+  const session = await getServerSession(buildAuthOptions())
+  if (!session)
+    return NextResponse.json({}, { status: HttpStatusCode.InternalServerError })
+
+  const { bio } = UpdateUserSchema.parse(await req.json())
+
+  const prismaRes = await prisma.user
+    .update({
+      where: {
+        id: session.user.id,
+      },
+      data: {
+        bio,
+      },
+    })
+    .then(() => ({ error: false, errorMessage: '' }))
+    .catch((err) => ({ error: true, errorMessage: err }))
+
+  if (prismaRes.error) {
+    return NextResponse.json(
+      {},
+      {
+        status: HttpStatusCode.InternalServerError,
+        statusText: prismaRes.errorMessage,
+      },
+    )
+  }
+
+  return NextResponse.json({}, { status: HttpStatusCode.Ok })
 }

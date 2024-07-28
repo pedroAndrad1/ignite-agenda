@@ -2,7 +2,7 @@
 import { Heading, Text } from '@pedroandrad1/react'
 import { Hero, MainHome, Preview } from './styles'
 import Image from 'next/image'
-import previewImage from '../../assets/home-preview.svg'
+import previewImage from '../../../assets/home-preview.svg'
 import { UserNameForm } from './components/UserNameForm'
 
 export default function Home() {

@@ -6,10 +6,6 @@ export const SobreVoceBox = styled(Box, {
   gap: '$4',
   marginTop: '$6',
 
-  img: {
-    borderRadius: '9999px',
-  },
-
   label: {
     display: 'flex',
     flexDirection: 'column',

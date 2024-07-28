@@ -14,6 +14,7 @@ model User {
   id         String   @id @default(uuid())
   username   String   @unique
   name       String
+  bio        String?
   email      String?  @unique
   avatar_url String?
   created_at DateTime @default(now())
@@ -62,6 +63,6 @@ model Horarios {
   inicio_em_minutos Int
   fim_em_minutos    Int
 
-  user    User   @relation(fields: [user_id], references: [id])
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id String
 }

@@ -7,13 +7,14 @@ import { HeaderRegistro } from '../components/HeaderRegistro'
 import { ArrowRight, Check } from 'phosphor-react'
 import { ConnectBox, ConnectItem } from './styles'
 import { signIn, useSession } from 'next-auth/react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useToast } from '@/shared/contexts/ToastContext'
 
 export default function ConexaoGoogle() {
   const searchParams = useSearchParams()
   const { toast } = useToast()
   const session = useSession()
+  const router = useRouter()
   const error = searchParams.get('error')
   const isAuthenticated = session.status === 'authenticated'
 
@@ -50,7 +51,11 @@ export default function ConexaoGoogle() {
             </Button>
           )}
         </ConnectItem>
-        <Button type="submit" disabled={!isAuthenticated}>
+        <Button
+          type="submit"
+          disabled={!isAuthenticated}
+          onClick={() => router.push('/registro/disponibilidade')}
+        >
           Próximo passo
           <ArrowRight />
         </Button>
