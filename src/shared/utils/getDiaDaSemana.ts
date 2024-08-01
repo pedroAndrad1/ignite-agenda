@@ -1,4 +1,8 @@
-export const getDiaDaSemana = () => {
+interface GetDiaDaSemanaParams {
+  short?: boolean
+}
+
+export const getDiaDaSemana = ({ short }: GetDiaDaSemanaParams) => {
   const formatter = new Intl.DateTimeFormat('pt-BR', {
     weekday: 'long',
   })
@@ -10,6 +14,11 @@ export const getDiaDaSemana = () => {
       // Um ano e um mes no qual o dia 0 seja domingo
       new Date(Date.UTC(2021, 5, diaDaSemana)),
     )
+
+    if (short) {
+      return diaDaSemanaFormatted.substring(0, 3).toLocaleUpperCase()
+    }
+
     const diaDaSemanaCapitalized = diaDaSemanaFormatted
       .substring(0, 1)
       .toLocaleUpperCase()

@@ -1,7 +1,6 @@
 import { prisma } from '@/lib/prisma'
-import { buildAuthOptions } from '@/shared/utils/buildAuthOptions'
+import { getSession } from '@/shared/utils/getSession'
 import { HttpStatusCode } from 'axios'
-import { getServerSession } from 'next-auth'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
@@ -27,7 +26,7 @@ const HorariosSchema = z.object({
 })
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(buildAuthOptions())
+  const session = await getSession()
   if (!session)
     return NextResponse.json({}, { status: HttpStatusCode.InternalServerError })
 

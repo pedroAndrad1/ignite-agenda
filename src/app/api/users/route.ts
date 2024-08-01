@@ -1,8 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { ERRORS } from '@/shared/constants/errors'
-import { buildAuthOptions } from '@/shared/utils/buildAuthOptions'
+import { getSession } from '@/shared/utils/getSession'
 import { HttpStatusCode } from 'axios'
-import { getServerSession } from 'next-auth'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
@@ -47,7 +46,7 @@ const UpdateUserSchema = z.object({
   bio: z.string(),
 })
 export async function PUT(req: NextRequest) {
-  const session = await getServerSession(buildAuthOptions())
+  const session = await getSession()
   if (!session)
     return NextResponse.json({}, { status: HttpStatusCode.InternalServerError })
 
@@ -76,4 +75,37 @@ export async function PUT(req: NextRequest) {
   }
 
   return NextResponse.json({}, { status: HttpStatusCode.Ok })
+}
+
+export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams
+  const username = searchParams.get('username')
+
+  if (!username) {
+    return NextResponse.json(
+      {},
+      {
+        status: HttpStatusCode.BadRequest,
+        statusText: 'Sem usarname nos query params',
+      },
+    )
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      username,
+    },
+  })
+
+  if (!user) {
+    return NextResponse.json(
+      {},
+      {
+        status: HttpStatusCode.NotFound,
+        statusText: `Não foi encontrado usuário com o username ${username}`,
+      },
+    )
+  }
+
+  return NextResponse.json(user)
 }
