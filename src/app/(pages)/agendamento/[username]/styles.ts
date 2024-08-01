@@ -12,6 +12,7 @@ export const AgendamentoHeader = styled('header', {
   alignItems: 'center',
   gap: '$2',
   marginBottom: '$6',
+  textAlign: 'center',
 
   [`> ${Heading}`]: {
     lineHeight: '$base',

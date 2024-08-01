@@ -66,7 +66,9 @@ export default function Agendamento({
           <SpinnerGap size={32} color="#FFF" />
         )}
       </AgendamentoHeader>
-      <AgendamentoForm></AgendamentoForm>
+      <main>
+        <AgendamentoForm></AgendamentoForm>
+      </main>
     </AgendamentoContainer>
   )
 }
