@@ -2,7 +2,7 @@ interface GetDiaDaSemanaParams {
   short?: boolean
 }
 
-export const getDiaDaSemana = ({ short }: GetDiaDaSemanaParams) => {
+export const getDiaDaSemana = ({ short }: GetDiaDaSemanaParams = {}) => {
   const formatter = new Intl.DateTimeFormat('pt-BR', {
     weekday: 'long',
   })

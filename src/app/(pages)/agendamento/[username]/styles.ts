@@ -4,6 +4,8 @@ export const AgendamentoContainer = styled('div', {
   maxWidth: 852,
   padding: '0 $4',
   margin: '$20 auto $4',
+  width: 540,
+  gridTemplateColumns: '1fr',
 })
 
 export const AgendamentoHeader = styled('header', {
