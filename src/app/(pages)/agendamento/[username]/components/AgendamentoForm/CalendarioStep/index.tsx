@@ -8,7 +8,7 @@ import {
 } from './styles'
 
 export function CalendarioStep() {
-  const isDateSelected = true
+  const isDateSelected = false
 
   return (
     <CalendarioStepContainer isHorariosPickerOpened={isDateSelected}>

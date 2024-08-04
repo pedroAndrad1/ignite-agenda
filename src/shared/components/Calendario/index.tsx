@@ -8,20 +8,30 @@ import {
   CalendarioTitle,
 } from './styles'
 import { getDiaDaSemana } from '@/shared/utils/getDiaDaSemana'
+import { useState } from 'react'
+import dayjs from 'dayjs'
 
 export function Calendario() {
+  const [dataAtual, setDataAtual] = useState(dayjs().set('date', 1))
+
   const shortWeekDays = getDiaDaSemana({ short: true })
+  const mesAtual = dataAtual.format('MMMM')
+  const anoAtual = dataAtual.format('YYYY')
+
+  const proximoMes = () => setDataAtual(dataAtual.add(1, 'M'))
+  const mesAnterior = () => setDataAtual(dataAtual.subtract(1, 'M'))
+
   return (
     <CalendarioContainer>
       <CalendarioHeader>
         <CalendarioTitle>
-          Dezembro <span>2022</span>
+          {mesAtual} <span>{anoAtual}</span>
         </CalendarioTitle>
         <CalendarioActions>
-          <button>
+          <button onClick={() => mesAnterior()} title="Mês anterior">
             <CaretLeft />
           </button>
-          <button>
+          <button onClick={() => proximoMes()} title="Próximo mês">
             <CaretRight />
           </button>
         </CalendarioActions>

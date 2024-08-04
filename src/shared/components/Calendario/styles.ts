@@ -13,6 +13,7 @@ export const CalendarioHeader = styled('div', {
 })
 export const CalendarioTitle = styled(Text, {
   fontWeight: '$bold',
+  textTransform: 'capitalize',
   span: {
     color: '$gray200',
   },
