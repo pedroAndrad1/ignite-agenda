@@ -19,6 +19,7 @@ import { useToast } from '@/shared/contexts/ToastContext'
 import { useSession } from 'next-auth/react'
 import { api } from '@/lib/axios'
 import { useRouter } from 'next/navigation'
+import { ErrorMessage } from '@/shared/components/ErrorMessage'
 
 const SobreVoceFormSchema = z.object({
   bio: z.string(),
@@ -32,7 +33,7 @@ export default function SobreVoce() {
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = useForm<SobreVoceFormData>({
     resolver: zodResolver(SobreVoceFormSchema),
   })
@@ -62,9 +63,13 @@ export default function SobreVoce() {
         <label>
           <Text>Sobre você</Text>
           <TextArea {...register('bio')} />
-          <FormAnnotation>
-            Fale um pouco sobre você. Isto será exibido em sua página pessoal.
-          </FormAnnotation>
+          {errors.bio ? (
+            <ErrorMessage>{errors.bio.message}</ErrorMessage>
+          ) : (
+            <FormAnnotation>
+              Fale um pouco sobre você. Isto será exibido em sua página pessoal.
+            </FormAnnotation>
+          )}
         </label>
         <Button type="submit" disabled={isSubmitting}>
           Finalizar
