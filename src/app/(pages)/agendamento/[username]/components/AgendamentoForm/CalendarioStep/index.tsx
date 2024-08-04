@@ -6,14 +6,16 @@ import {
   HorariosPickerHeader,
   HorariosPickerList,
 } from './styles'
+import { useState } from 'react'
 
 export function CalendarioStep() {
-  const isDateSelected = false
+  const [selectedDia, setSelectedDia] = useState<Date | null>(null)
+  const isDiaSelected = !!selectedDia
 
   return (
-    <CalendarioStepContainer isHorariosPickerOpened={isDateSelected}>
-      <Calendario />
-      {isDateSelected && (
+    <CalendarioStepContainer isHorariosPickerOpened={isDiaSelected}>
+      <Calendario selectedDia={selectedDia} onSelectedDia={setSelectedDia} />
+      {isDiaSelected && (
         <HorariosPickerContainer>
           <HorariosPickerHeader>
             Terça Feira <span>20 de setembro</span>

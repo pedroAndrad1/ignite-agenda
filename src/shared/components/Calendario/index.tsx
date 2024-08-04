@@ -15,13 +15,16 @@ interface DiaDaSemana {
   dia: dayjs.Dayjs
   disabled: boolean
 }
-
 interface CalendarioSemana {
   semana: number
   diasDaSemana: DiaDaSemana[]
 }
+interface CalendarioProps {
+  selectedDia: Date | null
+  onSelectedDia: (dia: Date) => void
+}
 
-export function Calendario() {
+export function Calendario({ onSelectedDia }: CalendarioProps) {
   const [dataAtual, setDataAtual] = useState(dayjs().set('date', 1))
 
   const shortWeekDays = getDiaDaSemana({ short: true })
@@ -77,7 +80,10 @@ export function Calendario() {
 
     const diasDoMesAndSobras: DiaDaSemana[] = [
       ...sobraMesAnterior.map((dia) => ({ dia, disabled: true })),
-      ...diasDoMes.map((dia) => ({ dia, disabled: false })),
+      ...diasDoMes.map((dia) => ({
+        dia,
+        disabled: dia.endOf('date').isBefore(new Date()),
+      })),
       ...sobraProximoMes.map((dia) => ({ dia, disabled: true })),
     ]
 
@@ -112,7 +118,10 @@ export function Calendario() {
             <tr key={semana}>
               {diasDaSemana.map(({ dia, disabled }) => (
                 <td key={dia.toString()}>
-                  <CalendarioDay disabled={disabled}>
+                  <CalendarioDay
+                    disabled={disabled}
+                    onClick={() => onSelectedDia(dia.toDate())}
+                  >
                     {dia.get('date')}
                   </CalendarioDay>
                 </td>
