@@ -7,10 +7,15 @@ import {
   HorariosPickerList,
 } from './styles'
 import { useState } from 'react'
+import dayjs from 'dayjs'
 
 export function CalendarioStep() {
   const [selectedDia, setSelectedDia] = useState<Date | null>(null)
   const isDiaSelected = !!selectedDia
+
+  const selectedDiaDaSemana = selectedDia && dayjs(selectedDia).format('dddd')
+  const selectedDiaDoMes =
+    selectedDia && dayjs(selectedDia).format('DD[ de ]MMMM')
 
   return (
     <CalendarioStepContainer isHorariosPickerOpened={isDiaSelected}>
@@ -18,7 +23,7 @@ export function CalendarioStep() {
       {isDiaSelected && (
         <HorariosPickerContainer>
           <HorariosPickerHeader>
-            Terça Feira <span>20 de setembro</span>
+            {selectedDiaDaSemana} <span>{selectedDiaDoMes}</span>
           </HorariosPickerHeader>
           <HorariosPickerList>
             <li>

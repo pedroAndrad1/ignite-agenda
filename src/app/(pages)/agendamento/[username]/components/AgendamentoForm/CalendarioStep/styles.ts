@@ -28,6 +28,7 @@ export const HorariosPickerContainer = styled('div', {
   display: 'flex',
   flexDirection: 'column',
   gap: '$3',
+  width: '280px',
 
   position: 'absolute',
   top: '0',

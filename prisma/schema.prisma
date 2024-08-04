@@ -22,7 +22,7 @@ model User {
   accounts    Account[]
   sessions    Session[]
   horarios    Horario[]
-  Agendamento Agendamento[]
+  agendamento Agendamento[]
 
   @@map("users")
 }
