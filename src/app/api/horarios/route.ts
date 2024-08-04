@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     horarios: await req.json(),
   })
 
-  const prismaRes = await prisma.horarios
+  const prismaRes = await prisma.horario
     .createMany({
       data: horarios.map((horarioRaw) => ({
         dia_da_semana: horarioRaw.diaDaSemana,
