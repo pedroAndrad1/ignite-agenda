@@ -41,7 +41,7 @@ export default function SobreVoce() {
   const handleSobreVoceFormSubmit = async (formData: SobreVoceFormData) => {
     await api
       .put('users', formData)
-      .then(() => router.push(`agenda/${data?.user.username}`))
+      .then(() => router.push(`/agendamento/${data?.user.username}`))
       .catch(() =>
         toast('Ocorreu um erro ao salvar sua bio. Por favor, tente novamente.'),
       )
