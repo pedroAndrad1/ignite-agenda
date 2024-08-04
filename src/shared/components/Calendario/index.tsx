@@ -8,8 +8,18 @@ import {
   CalendarioTitle,
 } from './styles'
 import { getDiaDaSemana } from '@/shared/utils/getDiaDaSemana'
-import { useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
+
+interface DiaDaSemana {
+  dia: dayjs.Dayjs
+  disabled: boolean
+}
+
+interface CalendarioSemana {
+  semana: number
+  diasDaSemana: DiaDaSemana[]
+}
 
 export function Calendario() {
   const [dataAtual, setDataAtual] = useState(dayjs().set('date', 1))
@@ -18,8 +28,61 @@ export function Calendario() {
   const mesAtual = dataAtual.format('MMMM')
   const anoAtual = dataAtual.format('YYYY')
 
-  const proximoMes = () => setDataAtual(dataAtual.add(1, 'M'))
-  const mesAnterior = () => setDataAtual(dataAtual.subtract(1, 'M'))
+  const handleProximoMes = () => setDataAtual(dataAtual.add(1, 'M'))
+  const handleMesAnterior = () => setDataAtual(dataAtual.subtract(1, 'M'))
+
+  const calcSobrasDoMes = useCallback(() => {
+    const primeiroDiaPrimeiraSemanaDoMes = dataAtual.get('day')
+    const sobraMesAnterior = Array.from({
+      length: primeiroDiaPrimeiraSemanaDoMes,
+    })
+      .map((_, i) => dataAtual.subtract(i + 1, 'day'))
+      .reverse()
+
+    const ultimoDiaDoMes = dataAtual.set('date', dataAtual.daysInMonth())
+    const ultimoDiaUltimaSemanaDoMes = ultimoDiaDoMes.get('day')
+    const sobraProximoMes = Array.from({
+      length: 7 - (ultimoDiaUltimaSemanaDoMes + 1),
+    }).map((_, i) => ultimoDiaDoMes.add(i + 1, 'day'))
+
+    return [sobraMesAnterior, sobraProximoMes]
+  }, [dataAtual])
+
+  const convertDiasToSemanasDoMes = useCallback(
+    (diasDoMesAndSobras: DiaDaSemana[]) => {
+      return diasDoMesAndSobras.reduce<CalendarioSemana[]>(
+        (acc, curr, i, original) => {
+          const isNovaSemana = i % 7 === 0
+
+          if (isNovaSemana) {
+            acc.push({
+              semana: i / 7 + 1,
+              diasDaSemana: original.slice(i, i + 7),
+            })
+          }
+
+          return acc
+        },
+        [],
+      )
+    },
+    [],
+  )
+
+  const semanasDoCalendario = useMemo(() => {
+    const diasDoMes = Array.from({ length: dataAtual.daysInMonth() }).map(
+      (_, i) => dataAtual.set('date', i + 1),
+    )
+    const [sobraMesAnterior, sobraProximoMes] = calcSobrasDoMes()
+
+    const diasDoMesAndSobras: DiaDaSemana[] = [
+      ...sobraMesAnterior.map((dia) => ({ dia, disabled: true })),
+      ...diasDoMes.map((dia) => ({ dia, disabled: false })),
+      ...sobraProximoMes.map((dia) => ({ dia, disabled: true })),
+    ]
+
+    return convertDiasToSemanasDoMes(diasDoMesAndSobras)
+  }, [dataAtual, calcSobrasDoMes, convertDiasToSemanasDoMes])
 
   return (
     <CalendarioContainer>
@@ -28,10 +91,10 @@ export function Calendario() {
           {mesAtual} <span>{anoAtual}</span>
         </CalendarioTitle>
         <CalendarioActions>
-          <button onClick={() => mesAnterior()} title="Mês anterior">
+          <button onClick={() => handleMesAnterior()} title="Mês anterior">
             <CaretLeft />
           </button>
-          <button onClick={() => proximoMes()} title="Próximo mês">
+          <button onClick={() => handleProximoMes()} title="Próximo mês">
             <CaretRight />
           </button>
         </CalendarioActions>
@@ -45,21 +108,17 @@ export function Calendario() {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>
-              <CalendarioDay>1</CalendarioDay>
-            </td>
-            <td>
-              <CalendarioDay>2</CalendarioDay>
-            </td>
-            <td>
-              <CalendarioDay>3</CalendarioDay>
-            </td>
-          </tr>
+          {semanasDoCalendario.map(({ semana, diasDaSemana }) => (
+            <tr key={semana}>
+              {diasDaSemana.map(({ dia, disabled }) => (
+                <td key={dia.toString()}>
+                  <CalendarioDay disabled={disabled}>
+                    {dia.get('date')}
+                  </CalendarioDay>
+                </td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </CalendarioBody>
     </CalendarioContainer>
