@@ -31,7 +31,7 @@ export function CalendarioStep() {
   const selectedDiaDoMes =
     selectedDia && dayjs(selectedDia).format('DD[ de ]MMMM')
   const getDisponibilidade = async () => {
-    return api.get<DisponibilidadeResponse>(
+    const { data } = await api.get<DisponibilidadeResponse>(
       `disponibilidade/${pathName.split('/')[2]}`,
       {
         params: {
@@ -39,11 +39,13 @@ export function CalendarioStep() {
         },
       },
     )
+
+    return data
   }
   const {
     data: apiDisponibilidadesResponse,
     isLoading: apiDisponibilidadesLoading,
-  } = useQuery({
+  } = useQuery<DisponibilidadeResponse>({
     queryKey: ['disponibilidade', { selectedDia }],
     queryFn: getDisponibilidade,
     enabled: !!selectedDia,
@@ -60,7 +62,7 @@ export function CalendarioStep() {
           {!apiDisponibilidadesLoading ? (
             <HorariosPickerList>
               {apiDisponibilidadesResponse &&
-                apiDisponibilidadesResponse.data.disponibilidades.map(
+                apiDisponibilidadesResponse.disponibilidades.map(
                   ({ horario, disponivel }) => (
                     <li key={horario}>
                       <HorarioPickerItem disabled={!disponivel}>
