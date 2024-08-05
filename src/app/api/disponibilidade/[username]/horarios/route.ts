@@ -41,7 +41,7 @@ const validateUser = (user: PrismaUser | null) => {
     }
 }
 
-const mountDisponibilidadeResponse = async (
+const mountHorariosDisponiveisResponse = async (
   user: PrismaUser | null,
   selectedDia: dayjs.Dayjs,
   inicio: number,
@@ -100,13 +100,14 @@ export async function GET(
       dia_da_semana: selectedDia.get('day'),
     },
   })
-  if (!userDisponibilidade) return NextResponse.json({ disponibilidades: [] })
+  if (!userDisponibilidade)
+    return NextResponse.json({ horariosDisponiveis: [] })
 
   const inicio = userDisponibilidade.inicio_em_minutos / 60
   const fim = userDisponibilidade.fim_em_minutos / 60
 
   return NextResponse.json({
-    disponibilidades: await mountDisponibilidadeResponse(
+    horariosDisponiveis: await mountHorariosDisponiveisResponse(
       user,
       selectedDia,
       inicio,

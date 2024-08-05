@@ -14,13 +14,13 @@ import { usePathname } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { SpinnerGap } from 'phosphor-react'
 
-interface Disponibilidade {
+interface HorariosDisponiveis {
   horario: number
   disponivel: boolean
 }
 
-interface DisponibilidadeResponse {
-  disponibilidades: Disponibilidade[]
+interface HorariosDisponiveisResponse {
+  horariosDisponiveis: HorariosDisponiveis[]
 }
 
 export function CalendarioStep() {
@@ -31,8 +31,8 @@ export function CalendarioStep() {
   const selectedDiaDoMes =
     selectedDia && dayjs(selectedDia).format('DD[ de ]MMMM')
   const getDisponibilidade = async () => {
-    const { data } = await api.get<DisponibilidadeResponse>(
-      `disponibilidade/${pathName.split('/')[2]}`,
+    const { data } = await api.get<HorariosDisponiveisResponse>(
+      `disponibilidade/${pathName.split('/')[2]}/horarios`,
       {
         params: {
           date: dayjs(selectedDia).format('YYYY-MM-DD'),
@@ -43,9 +43,9 @@ export function CalendarioStep() {
     return data
   }
   const {
-    data: apiDisponibilidadesResponse,
-    isLoading: apiDisponibilidadesLoading,
-  } = useQuery<DisponibilidadeResponse>({
+    data: horariosDisponiveisResponse,
+    isLoading: horariosDisponiveisLoading,
+  } = useQuery<HorariosDisponiveisResponse>({
     queryKey: ['disponibilidade', { selectedDia }],
     queryFn: getDisponibilidade,
     enabled: !!selectedDia,
@@ -59,10 +59,10 @@ export function CalendarioStep() {
           <HorariosPickerHeader>
             {selectedDiaDaSemana} <span>{selectedDiaDoMes}</span>
           </HorariosPickerHeader>
-          {!apiDisponibilidadesLoading ? (
+          {!horariosDisponiveisLoading ? (
             <HorariosPickerList>
-              {apiDisponibilidadesResponse &&
-                apiDisponibilidadesResponse.disponibilidades.map(
+              {horariosDisponiveisResponse &&
+                horariosDisponiveisResponse.horariosDisponiveis.map(
                   ({ horario, disponivel }) => (
                     <li key={horario}>
                       <HorarioPickerItem disabled={!disponivel}>
@@ -75,7 +75,7 @@ export function CalendarioStep() {
             </HorariosPickerList>
           ) : (
             <HorariosPickerListLoader>
-              <SpinnerGap size={32} color="#FFF" />\
+              <SpinnerGap size={32} color="#FFF" />
             </HorariosPickerListLoader>
           )}
         </HorariosPickerContainer>
