@@ -1,14 +1,15 @@
-import { CaretLeft, CaretRight } from 'phosphor-react'
+import { CaretLeft, CaretRight, SpinnerGap } from 'phosphor-react'
 import {
   CalendarioActions,
   CalendarioBody,
   CalendarioContainer,
   CalendarioDay,
   CalendarioHeader,
+  CalendarioLoader,
   CalendarioTitle,
 } from './styles'
 import { getDiaDaSemana } from '@/shared/utils/getDiaDaSemana'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 
 interface DiaDaSemana {
@@ -20,18 +21,25 @@ interface CalendarioSemana {
   diasDaSemana: DiaDaSemana[]
 }
 interface CalendarioProps {
-  selectedDia: Date | null
+  diasDaSemanaIndisponiveis?: number[]
   onSelectedDia: (dia: Date) => void
+  onMesChange?: (data: string) => void
+  isLoading?: boolean
 }
 
-export function Calendario({ onSelectedDia }: CalendarioProps) {
+export function Calendario({
+  diasDaSemanaIndisponiveis,
+  onSelectedDia,
+  onMesChange,
+  isLoading,
+}: CalendarioProps) {
   const [dataAtual, setDataAtual] = useState(dayjs().set('date', 1))
-
   const shortWeekDays = getDiaDaSemana({ short: true })
   const mesAtual = dataAtual.format('MMMM')
   const anoAtual = dataAtual.format('YYYY')
 
   const handleProximoMes = () => setDataAtual(dataAtual.add(1, 'M'))
+
   const handleMesAnterior = () => setDataAtual(dataAtual.subtract(1, 'M'))
 
   const calcSobrasDoMes = useCallback(() => {
@@ -77,59 +85,77 @@ export function Calendario({ onSelectedDia }: CalendarioProps) {
       (_, i) => dataAtual.set('date', i + 1),
     )
     const [sobraMesAnterior, sobraProximoMes] = calcSobrasDoMes()
-
     const diasDoMesAndSobras: DiaDaSemana[] = [
       ...sobraMesAnterior.map((dia) => ({ dia, disabled: true })),
       ...diasDoMes.map((dia) => ({
         dia,
-        disabled: dia.endOf('date').isBefore(new Date()),
+        disabled:
+          dia.endOf('date').isBefore(new Date()) ||
+          (diasDaSemanaIndisponiveis || []).includes(dia.get('day')),
       })),
       ...sobraProximoMes.map((dia) => ({ dia, disabled: true })),
     ]
 
     return convertDiasToSemanasDoMes(diasDoMesAndSobras)
-  }, [dataAtual, calcSobrasDoMes, convertDiasToSemanasDoMes])
+  }, [
+    dataAtual,
+    calcSobrasDoMes,
+    convertDiasToSemanasDoMes,
+    diasDaSemanaIndisponiveis,
+  ])
+
+  useEffect(() => {
+    if (onMesChange) onMesChange(dataAtual.toISOString())
+  }, [onMesChange, dataAtual])
 
   return (
     <CalendarioContainer>
-      <CalendarioHeader>
-        <CalendarioTitle>
-          {mesAtual} <span>{anoAtual}</span>
-        </CalendarioTitle>
-        <CalendarioActions>
-          <button onClick={() => handleMesAnterior()} title="Mês anterior">
-            <CaretLeft />
-          </button>
-          <button onClick={() => handleProximoMes()} title="Próximo mês">
-            <CaretRight />
-          </button>
-        </CalendarioActions>
-      </CalendarioHeader>
-      <CalendarioBody>
-        <thead>
-          <tr>
-            {shortWeekDays.map((weekDay) => (
-              <th key={weekDay}>{weekDay}.</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {semanasDoCalendario.map(({ semana, diasDaSemana }) => (
-            <tr key={semana}>
-              {diasDaSemana.map(({ dia, disabled }) => (
-                <td key={dia.toString()}>
-                  <CalendarioDay
-                    disabled={disabled}
-                    onClick={() => onSelectedDia(dia.toDate())}
-                  >
-                    {dia.get('date')}
-                  </CalendarioDay>
-                </td>
+      {isLoading ? (
+        <CalendarioLoader>
+          <SpinnerGap size={32} color="#FFF" />
+        </CalendarioLoader>
+      ) : (
+        <>
+          <CalendarioHeader>
+            <CalendarioTitle>
+              {mesAtual} <span>{anoAtual}</span>
+            </CalendarioTitle>
+            <CalendarioActions>
+              <button onClick={() => handleMesAnterior()} title="Mês anterior">
+                <CaretLeft />
+              </button>
+              <button onClick={() => handleProximoMes()} title="Próximo mês">
+                <CaretRight />
+              </button>
+            </CalendarioActions>
+          </CalendarioHeader>
+          <CalendarioBody>
+            <thead>
+              <tr>
+                {shortWeekDays.map((weekDay) => (
+                  <th key={weekDay}>{weekDay}.</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {semanasDoCalendario.map(({ semana, diasDaSemana }) => (
+                <tr key={semana}>
+                  {diasDaSemana.map(({ dia, disabled }) => (
+                    <td key={dia.toString()}>
+                      <CalendarioDay
+                        disabled={disabled}
+                        onClick={() => onSelectedDia(dia.toDate())}
+                      >
+                        {dia.get('date')}
+                      </CalendarioDay>
+                    </td>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          ))}
-        </tbody>
-      </CalendarioBody>
+            </tbody>
+          </CalendarioBody>
+        </>
+      )}
     </CalendarioContainer>
   )
 }

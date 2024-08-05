@@ -18,21 +18,37 @@ interface HorariosDisponiveis {
   horario: number
   disponivel: boolean
 }
-
+interface DiasIndisponiveisResponse {
+  diasIndisponiveis: number[]
+}
 interface HorariosDisponiveisResponse {
   horariosDisponiveis: HorariosDisponiveis[]
 }
 
 export function CalendarioStep() {
   const [selectedDia, setSelectedDia] = useState<Date | null>(null)
+  const [dataAtual, setDataAtual] = useState<string | null>(null)
   const isDiaSelected = !!selectedDia
-  const pathName = usePathname()
+  const username = usePathname().split('/')[2]
   const selectedDiaDaSemana = selectedDia && dayjs(selectedDia).format('dddd')
   const selectedDiaDoMes =
     selectedDia && dayjs(selectedDia).format('DD[ de ]MMMM')
-  const getDisponibilidade = async () => {
+  const getDiasDisponiveis = async () => {
+    const { data } = await api.get<DiasIndisponiveisResponse>(
+      `disponibilidade/${username}/dias/indisponiveis`,
+      {
+        params: {
+          ano: dayjs(dataAtual).get('year'),
+          mes: dayjs(dataAtual).get('month'),
+        },
+      },
+    )
+
+    return data
+  }
+  const getHorariosDisponiveis = async () => {
     const { data } = await api.get<HorariosDisponiveisResponse>(
-      `disponibilidade/${pathName.split('/')[2]}/horarios`,
+      `disponibilidade/${username}/horarios`,
       {
         params: {
           date: dayjs(selectedDia).format('YYYY-MM-DD'),
@@ -42,18 +58,29 @@ export function CalendarioStep() {
 
     return data
   }
+  const { data: diasIndisponiveisResponse, isLoading: diasDisponiveisLoading } =
+    useQuery<DiasIndisponiveisResponse>({
+      queryKey: ['diasDisponiveis', { dataAtual }],
+      queryFn: getDiasDisponiveis,
+      enabled: !!dataAtual,
+    })
   const {
     data: horariosDisponiveisResponse,
     isLoading: horariosDisponiveisLoading,
   } = useQuery<HorariosDisponiveisResponse>({
-    queryKey: ['disponibilidade', { selectedDia }],
-    queryFn: getDisponibilidade,
+    queryKey: ['horariosDisponiveis', { selectedDia }],
+    queryFn: getHorariosDisponiveis,
     enabled: !!selectedDia,
   })
 
   return (
     <CalendarioStepContainer isHorariosPickerOpened={isDiaSelected}>
-      <Calendario selectedDia={selectedDia} onSelectedDia={setSelectedDia} />
+      <Calendario
+        onSelectedDia={setSelectedDia}
+        onMesChange={setDataAtual}
+        diasDaSemanaIndisponiveis={diasIndisponiveisResponse?.diasIndisponiveis}
+        isLoading={diasDisponiveisLoading}
+      />
       {isDiaSelected && (
         <HorariosPickerContainer>
           <HorariosPickerHeader>

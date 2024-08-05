@@ -88,3 +88,10 @@ export const CalendarioDay = styled('button', {
     boxShadow: '0 0 0 2px $colors$gray100',
   },
 })
+
+export const CalendarioLoader = styled('div', {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: 480,
+})
