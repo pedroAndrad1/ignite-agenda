@@ -5,6 +5,8 @@ import { Roboto } from 'next/font/google'
 import { SessionProvider, SessionProviderProps } from 'next-auth/react'
 import { ToastContextProvider } from '@/shared/contexts/ToastContext'
 import '../lib/dayjs'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { queryClient } from '@/lib/react-query'
 const roboto = Roboto({ subsets: ['latin'], weight: ['400', '500', '700'] })
 export default function RootLayoutBody({
   children,
@@ -13,11 +15,13 @@ export default function RootLayoutBody({
   return (
     <html lang="pt-br">
       <body className={roboto.className}>
-        <SessionProvider session={session}>
-          <StitchesRegistry>
-            <ToastContextProvider>{children}</ToastContextProvider>
-          </StitchesRegistry>
-        </SessionProvider>
+        <QueryClientProvider client={queryClient}>
+          <SessionProvider session={session}>
+            <StitchesRegistry>
+              <ToastContextProvider>{children}</ToastContextProvider>
+            </StitchesRegistry>
+          </SessionProvider>
+        </QueryClientProvider>
       </body>
     </html>
   )

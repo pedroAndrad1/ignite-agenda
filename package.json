@@ -15,6 +15,7 @@
     "@pedroandrad1/react": "^2.2.6",
     "@pedroandrad1/ts-config": "^2.0.1",
     "@prisma/client": "^5.17.0",
+    "@tanstack/react-query": "^5.51.21",
     "axios": "^1.7.2",
     "dayjs": "^1.11.12",
     "next": "14.2.5",

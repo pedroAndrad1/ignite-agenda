@@ -5,11 +5,14 @@ import {
   HorariosPickerContainer,
   HorariosPickerHeader,
   HorariosPickerList,
+  HorariosPickerListLoader,
 } from './styles'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import dayjs from 'dayjs'
 import { api } from '@/lib/axios'
 import { usePathname } from 'next/navigation'
+import { useQuery } from '@tanstack/react-query'
+import { SpinnerGap } from 'phosphor-react'
 
 interface Disponibilidade {
   horario: number
@@ -22,30 +25,29 @@ interface DisponibilidadeResponse {
 
 export function CalendarioStep() {
   const [selectedDia, setSelectedDia] = useState<Date | null>(null)
-  const [disponibilidades, setDisponibilidades] = useState<Disponibilidade[]>(
-    [],
-  )
   const isDiaSelected = !!selectedDia
   const pathName = usePathname()
-
   const selectedDiaDaSemana = selectedDia && dayjs(selectedDia).format('dddd')
   const selectedDiaDoMes =
     selectedDia && dayjs(selectedDia).format('DD[ de ]MMMM')
-
-  useEffect(() => {
-    if (!selectedDia) return
-
-    api
-      .get<DisponibilidadeResponse>(
-        `disponibilidade/${pathName.split('/')[2]}`,
-        {
-          params: {
-            date: dayjs(selectedDia).format('YYYY-MM-DD'),
-          },
+  const getDisponibilidade = async () => {
+    return api.get<DisponibilidadeResponse>(
+      `disponibilidade/${pathName.split('/')[2]}`,
+      {
+        params: {
+          date: dayjs(selectedDia).format('YYYY-MM-DD'),
         },
-      )
-      .then((res) => setDisponibilidades(res.data.disponibilidades))
-  }, [selectedDia, pathName])
+      },
+    )
+  }
+  const {
+    data: apiDisponibilidadesResponse,
+    isLoading: apiDisponibilidadesLoading,
+  } = useQuery({
+    queryKey: ['disponibilidade', { selectedDia }],
+    queryFn: getDisponibilidade,
+    enabled: !!selectedDia,
+  })
 
   return (
     <CalendarioStepContainer isHorariosPickerOpened={isDiaSelected}>
@@ -55,16 +57,25 @@ export function CalendarioStep() {
           <HorariosPickerHeader>
             {selectedDiaDaSemana} <span>{selectedDiaDoMes}</span>
           </HorariosPickerHeader>
-          <HorariosPickerList>
-            {disponibilidades.map(({ horario, disponivel }) => (
-              <li key={horario}>
-                <HorarioPickerItem disabled={!disponivel}>
-                  {String(horario).padStart(2, '0')}:00h -{' '}
-                  {String(horario + 1).padStart(2, '0')}:00h
-                </HorarioPickerItem>
-              </li>
-            ))}
-          </HorariosPickerList>
+          {!apiDisponibilidadesLoading ? (
+            <HorariosPickerList>
+              {apiDisponibilidadesResponse &&
+                apiDisponibilidadesResponse.data.disponibilidades.map(
+                  ({ horario, disponivel }) => (
+                    <li key={horario}>
+                      <HorarioPickerItem disabled={!disponivel}>
+                        {String(horario).padStart(2, '0')}:00h -{' '}
+                        {String(horario + 1).padStart(2, '0')}:00h
+                      </HorarioPickerItem>
+                    </li>
+                  ),
+                )}
+            </HorariosPickerList>
+          ) : (
+            <HorariosPickerListLoader>
+              <SpinnerGap size={32} color="#FFF" />\
+            </HorariosPickerListLoader>
+          )}
         </HorariosPickerContainer>
       )}
     </CalendarioStepContainer>

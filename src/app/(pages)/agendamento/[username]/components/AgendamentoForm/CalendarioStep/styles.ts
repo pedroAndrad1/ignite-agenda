@@ -61,6 +61,13 @@ export const HorariosPickerList = styled('ol', {
   },
 })
 
+export const HorariosPickerListLoader = styled('div', {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+})
+
 export const HorarioPickerItem = styled('button', {
   border: 0,
   backgroundColor: '$gray600',
