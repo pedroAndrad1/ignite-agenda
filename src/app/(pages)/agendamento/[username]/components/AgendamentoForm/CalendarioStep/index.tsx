@@ -19,7 +19,8 @@ interface HorariosDisponiveis {
   disponivel: boolean
 }
 interface DiasIndisponiveisResponse {
-  diasIndisponiveis: number[]
+  diasDaSemanaSemMarcacao: number[]
+  diasDoMesComAgendaCheia: number[]
 }
 interface HorariosDisponiveisResponse {
   horariosDisponiveis: HorariosDisponiveis[]
@@ -33,13 +34,13 @@ export function CalendarioStep() {
   const selectedDiaDaSemana = selectedDia && dayjs(selectedDia).format('dddd')
   const selectedDiaDoMes =
     selectedDia && dayjs(selectedDia).format('DD[ de ]MMMM')
-  const getDiasDisponiveis = async () => {
+  const getDiasIndisponiveis = async () => {
     const { data } = await api.get<DiasIndisponiveisResponse>(
       `disponibilidade/${username}/dias/indisponiveis`,
       {
         params: {
           ano: dayjs(dataAtual).get('year'),
-          mes: dayjs(dataAtual).get('month'),
+          mes: String(dayjs(dataAtual).get('month') + 1).padStart(2, '0'),
         },
       },
     )
@@ -60,8 +61,8 @@ export function CalendarioStep() {
   }
   const { data: diasIndisponiveisResponse, isLoading: diasDisponiveisLoading } =
     useQuery<DiasIndisponiveisResponse>({
-      queryKey: ['diasDisponiveis', { dataAtual }],
-      queryFn: getDiasDisponiveis,
+      queryKey: ['diasIndisponiveis', { dataAtual }],
+      queryFn: getDiasIndisponiveis,
       enabled: !!dataAtual,
     })
   const {
@@ -78,7 +79,12 @@ export function CalendarioStep() {
       <Calendario
         onSelectedDia={setSelectedDia}
         onMesChange={setDataAtual}
-        diasDaSemanaIndisponiveis={diasIndisponiveisResponse?.diasIndisponiveis}
+        diasDaSemanaIndisponiveis={
+          diasIndisponiveisResponse?.diasDaSemanaSemMarcacao
+        }
+        diasDoMesIndisponiveis={
+          diasIndisponiveisResponse?.diasDoMesComAgendaCheia
+        }
         isLoading={diasDisponiveisLoading}
       />
       {isDiaSelected && (

@@ -21,14 +21,16 @@ interface CalendarioSemana {
   diasDaSemana: DiaDaSemana[]
 }
 interface CalendarioProps {
-  diasDaSemanaIndisponiveis?: number[]
   onSelectedDia: (dia: Date) => void
-  onMesChange?: (data: string) => void
+  diasDaSemanaIndisponiveis?: number[]
+  diasDoMesIndisponiveis?: number[]
   isLoading?: boolean
+  onMesChange?: (data: string) => void
 }
 
 export function Calendario({
   diasDaSemanaIndisponiveis,
+  diasDoMesIndisponiveis,
   onSelectedDia,
   onMesChange,
   isLoading,
@@ -91,7 +93,8 @@ export function Calendario({
         dia,
         disabled:
           dia.endOf('date').isBefore(new Date()) ||
-          (diasDaSemanaIndisponiveis || []).includes(dia.get('day')),
+          (diasDaSemanaIndisponiveis || []).includes(dia.get('day')) ||
+          (diasDoMesIndisponiveis || []).includes(dia.get('date')),
       })),
       ...sobraProximoMes.map((dia) => ({ dia, disabled: true })),
     ]
@@ -102,6 +105,7 @@ export function Calendario({
     calcSobrasDoMes,
     convertDiasToSemanasDoMes,
     diasDaSemanaIndisponiveis,
+    diasDoMesIndisponiveis,
   ])
 
   useEffect(() => {
