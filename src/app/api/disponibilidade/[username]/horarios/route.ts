@@ -71,9 +71,10 @@ const mountHorariosDisponiveisResponse = async (
 
   return horarios.map((horario) => ({
     horario,
-    disponivel: !horariosAgendados.some(
-      (horarioAgendado) => horarioAgendado.date.getHours() === horario,
-    ),
+    disponivel:
+      !horariosAgendados.some(
+        (horarioAgendado) => horarioAgendado.date.getHours() === horario,
+      ) && !selectedDia.set('hour', horario).isBefore(new Date()),
   }))
 }
 
