@@ -9,8 +9,8 @@ import { useToast } from '@/shared/contexts/ToastContext'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
 import { ErrorMessage } from '@/shared/components/ErrorMessage'
+import dayjs from 'dayjs'
 
 const ConfirmacaoStepSchema = z.object({
   name: z
@@ -21,8 +21,11 @@ const ConfirmacaoStepSchema = z.object({
 })
 
 type ConfirmacaoStepData = z.infer<typeof ConfirmacaoStepSchema>
-
-export function ConfirmacaoStep() {
+interface ConfirmacaoStepProps {
+  agendamento: Date
+  cancel: () => void
+}
+export function ConfirmacaoStep({ agendamento, cancel }: ConfirmacaoStepProps) {
   const { toast } = useToast()
   const {
     register,
@@ -31,7 +34,8 @@ export function ConfirmacaoStep() {
   } = useForm<ConfirmacaoStepData>({
     resolver: zodResolver(ConfirmacaoStepSchema),
   })
-
+  const diaDetalhe = dayjs(agendamento).format('DD[ de ]MMMM[ de ]YYYY')
+  const horaDetalhe = dayjs(agendamento).format('HH:mm[h]')
   const handleConfirmacaoStepSubmit = (data: ConfirmacaoStepData) => {}
 
   return (
@@ -42,11 +46,11 @@ export function ConfirmacaoStep() {
       <ConfirmacaoStepHeader>
         <Text>
           <CalendarBlank />
-          22 de Setembro de 2022
+          {diaDetalhe}
         </Text>
         <Text>
           <Clock />
-          18:00h
+          {horaDetalhe}
         </Text>
       </ConfirmacaoStepHeader>
       <label>
@@ -68,7 +72,7 @@ export function ConfirmacaoStep() {
         <TextArea {...register('observation')} />
       </label>
       <ConfirmacaoStepFormActions>
-        <Button type="button" variant="tertiary">
+        <Button type="button" variant="tertiary" onClick={() => cancel()}>
           Cancelar
         </Button>
         <Button type="submit" disabled={isSubmitting}>

@@ -25,8 +25,10 @@ interface DiasIndisponiveisResponse {
 interface HorariosDisponiveisResponse {
   horariosDisponiveis: HorariosDisponiveis[]
 }
-
-export function CalendarioStep() {
+interface CalendarioStepProps {
+  onHorarioSelect: (agendamento: Date) => void
+}
+export function CalendarioStep({ onHorarioSelect }: CalendarioStepProps) {
   const [selectedDia, setSelectedDia] = useState<Date | null>(null)
   const [dataAtual, setDataAtual] = useState<string | null>(null)
   const isDiaSelected = !!selectedDia
@@ -34,6 +36,13 @@ export function CalendarioStep() {
   const selectedDiaDaSemana = selectedDia && dayjs(selectedDia).format('dddd')
   const selectedDiaDoMes =
     selectedDia && dayjs(selectedDia).format('DD[ de ]MMMM')
+  const handleHorarioSelect = (horario: number) => {
+    const agendamento = dayjs(selectedDia)
+      .set('hour', horario)
+      .startOf('hour')
+      .toDate()
+    onHorarioSelect(agendamento)
+  }
   const getDiasIndisponiveis = async () => {
     const { data } = await api.get<DiasIndisponiveisResponse>(
       `disponibilidade/${username}/dias/indisponiveis`,
@@ -98,7 +107,10 @@ export function CalendarioStep() {
                 horariosDisponiveisResponse.horariosDisponiveis.map(
                   ({ horario, disponivel }) => (
                     <li key={horario}>
-                      <HorarioPickerItem disabled={!disponivel}>
+                      <HorarioPickerItem
+                        disabled={!disponivel}
+                        onClick={() => handleHorarioSelect(horario)}
+                      >
                         {String(horario).padStart(2, '0')}:00h -{' '}
                         {String(horario + 1).padStart(2, '0')}:00h
                       </HorarioPickerItem>
