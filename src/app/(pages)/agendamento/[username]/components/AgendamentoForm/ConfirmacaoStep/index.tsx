@@ -11,6 +11,8 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ErrorMessage } from '@/shared/components/ErrorMessage'
 import dayjs from 'dayjs'
+import { api } from '@/lib/axios'
+import { usePathname } from 'next/navigation'
 
 const ConfirmacaoStepSchema = z.object({
   name: z
@@ -23,9 +25,12 @@ const ConfirmacaoStepSchema = z.object({
 type ConfirmacaoStepData = z.infer<typeof ConfirmacaoStepSchema>
 interface ConfirmacaoStepProps {
   agendamento: Date
-  cancel: () => void
+  returnToCalendario: () => void
 }
-export function ConfirmacaoStep({ agendamento, cancel }: ConfirmacaoStepProps) {
+export function ConfirmacaoStep({
+  agendamento,
+  returnToCalendario,
+}: ConfirmacaoStepProps) {
   const { toast } = useToast()
   const {
     register,
@@ -36,7 +41,24 @@ export function ConfirmacaoStep({ agendamento, cancel }: ConfirmacaoStepProps) {
   })
   const diaDetalhe = dayjs(agendamento).format('DD[ de ]MMMM[ de ]YYYY')
   const horaDetalhe = dayjs(agendamento).format('HH:mm[h]')
-  const handleConfirmacaoStepSubmit = (data: ConfirmacaoStepData) => {}
+  const username = usePathname().split('/')[2]
+  const handleConfirmacaoStepSubmit = async (data: ConfirmacaoStepData) => {
+    const { name, email, observation } = data
+    await api
+      .post(`disponibilidade/${username}/agendamentos`, {
+        name,
+        email,
+        observation,
+        date: agendamento,
+      })
+      .then(() => toast('Agendamento realizado com sucesso.', 'Parabéns!'))
+      .catch(() =>
+        toast(
+          'Ocorreu um erro ao realizar o agendamento. Por favor, tente novamente mais tarde.',
+        ),
+      )
+      .finally(() => returnToCalendario())
+  }
 
   return (
     <ConfirmacaoStepForm
@@ -72,7 +94,11 @@ export function ConfirmacaoStep({ agendamento, cancel }: ConfirmacaoStepProps) {
         <TextArea {...register('observation')} />
       </label>
       <ConfirmacaoStepFormActions>
-        <Button type="button" variant="tertiary" onClick={() => cancel()}>
+        <Button
+          type="button"
+          variant="tertiary"
+          onClick={() => returnToCalendario()}
+        >
           Cancelar
         </Button>
         <Button type="submit" disabled={isSubmitting}>

@@ -1,16 +1,8 @@
 import { prisma } from '@/lib/prisma'
+import { PrismaUser } from '@/shared/interfaces/PrismaUser'
 import { User } from '@prisma/client'
 import { HttpStatusCode } from 'axios'
 import { NextRequest, NextResponse } from 'next/server'
-interface PrismaUser {
-  id: string
-  username: string
-  name: string
-  bio: string | null
-  email: string | null
-  avatar_url: string | null
-  created_at: Date
-}
 
 const validateUser = (user: PrismaUser | null) => {
   if (!user)
