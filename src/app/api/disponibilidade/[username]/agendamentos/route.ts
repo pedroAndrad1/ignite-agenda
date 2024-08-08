@@ -1,7 +1,9 @@
+import { getGoogleOAuthToken } from '@/lib/google'
 import { prisma } from '@/lib/prisma'
 import { PrismaUser } from '@/shared/interfaces/PrismaUser'
 import { HttpStatusCode } from 'axios'
 import dayjs from 'dayjs'
+import { google } from 'googleapis'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
@@ -57,13 +59,42 @@ export async function POST(
       },
     )
 
-  await prisma.agendamento.create({
+  const newAgendamento = await prisma.agendamento.create({
     data: {
       date: agendamento.toISOString(),
       name,
       email,
       observation,
       user_id: user?.id as string,
+    },
+  })
+
+  const calendar = google.calendar({
+    version: 'v3',
+    auth: await getGoogleOAuthToken(user?.id as string),
+  })
+
+  await calendar.events.insert({
+    calendarId: 'primary',
+    conferenceDataVersion: 1,
+    requestBody: {
+      summary: `Ignite Agenda: ${name}`,
+      description: observation,
+      start: {
+        dateTime: agendamento.format(),
+      },
+      end: {
+        dateTime: agendamento.add(1, 'hour').format(),
+      },
+      attendees: [{ email, displayName: name }],
+      conferenceData: {
+        createRequest: {
+          requestId: newAgendamento.id,
+          conferenceSolutionKey: {
+            type: 'hangoutsMeet',
+          },
+        },
+      },
     },
   })
 
