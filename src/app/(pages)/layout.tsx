@@ -2,6 +2,7 @@
 
 import { useToast } from '@/shared/contexts/ToastContext'
 import { Toast } from '@pedroandrad1/react'
+import { Suspense } from 'react'
 
 export default function RootLayout({
   children,
@@ -17,7 +18,7 @@ export default function RootLayout({
         title={title}
         description={description}
       />
-      {children}
+      <Suspense>{children}</Suspense>
     </>
   )
 }
