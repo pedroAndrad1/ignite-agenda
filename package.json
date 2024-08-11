@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "migrate": "npx prisma migrate dev",
-    "prisma-studio": "npx prisma studio"
+    "prisma-studio": "npx prisma studio",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
