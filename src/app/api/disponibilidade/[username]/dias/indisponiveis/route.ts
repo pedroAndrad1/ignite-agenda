@@ -24,19 +24,38 @@ const getDiasDoMesComAgendaCheia = async (
   mes: string | null,
 ) => {
   const diasComAgendaCheiaRaw: Array<{ date: number }> = await prisma.$queryRaw`
-    SELECT
-      EXTRACT(DAY FROM A.DATE) AS date,
-      COUNT(A.date) AS amount,
-      ((H.fim_em_minutos - H.inicio_em_minutos) / 60) AS size
-    FROM agendamentos A
-    LEFT JOIN horarios H
-      ON H.dia_da_semana = WEEKDAY(DATE_ADD(A.date, INTERVAL 1 DAY))
-    WHERE A.user_id = ${user?.id}
-      AND DATE_FORMAT(A.date, "%Y-%m") = ${`${ano}-${mes}`}
-    GROUP BY EXTRACT(DAY FROM A.DATE),
-      ((H.fim_em_minutos - H.inicio_em_minutos) / 60)
-    HAVING amount >= size
+   SELECT
+    EXTRACT(DAY FROM A.DATE) AS date,
+    COUNT(A.date),
+    ((H.fim_em_minutos - H.inicio_em_minutos) / 60)
+
+  FROM agendamentos A
+
+  LEFT JOIN horarios H
+    ON H.dia_da_semana = EXTRACT(DOW FROM A.date + INTERVAL '1 day')
+
+  WHERE A.user_id = ${user?.id}
+    AND EXTRACT(YEAR FROM A.date) = ${ano}::int
+    AND EXTRACT(MONTH FROM A.date) = ${mes}::int
+
+  GROUP BY EXTRACT(DAY FROM A.DATE),
+    ((H.fim_em_minutos - H.inicio_em_minutos) / 60)
+
+  HAVING
+    COUNT(A.date) >= ((H.fim_em_minutos - H.inicio_em_minutos) / 60);
   `
+  // -- SELECT
+  // --   EXTRACT(DAY FROM A.DATE) AS date,
+  // --   COUNT(A.date) AS amount,
+  // --   ((H.fim_em_minutos - H.inicio_em_minutos) / 60) AS size
+  // -- FROM agendamentos A
+  // -- LEFT JOIN horarios H
+  // --   ON H.dia_da_semana = WEEKDAY(DATE_ADD(A.date, INTERVAL 1 DAY))
+  // -- WHERE A.user_id = ${user?.id}
+  // --   AND DATE_FORMAT(A.date, "%Y-%m") = ${`${ano}-${mes}`}
+  // -- GROUP BY EXTRACT(DAY FROM A.DATE),
+  // --   ((H.fim_em_minutos - H.inicio_em_minutos) / 60)
+  // -- HAVING amount >= size
 
   return diasComAgendaCheiaRaw.map((item) => item.date)
 }
