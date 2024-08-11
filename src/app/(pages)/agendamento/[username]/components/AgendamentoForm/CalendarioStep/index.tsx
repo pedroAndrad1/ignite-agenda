@@ -62,6 +62,7 @@ export function CalendarioStep({ onHorarioSelect }: CalendarioStepProps) {
       {
         params: {
           date: dayjs(selectedDia).format('YYYY-MM-DD'),
+          timezoneOffset: selectedDia ? selectedDia.getTimezoneOffset() : 0,
         },
       },
     )

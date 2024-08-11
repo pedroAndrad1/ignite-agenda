@@ -1,7 +1,9 @@
 import { prisma } from '@/lib/prisma'
 import { HttpStatusCode } from 'axios'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 import { NextRequest, NextResponse } from 'next/server'
+dayjs.extend(utc)
 
 interface PrismaUser {
   id: string
@@ -46,6 +48,7 @@ const mountHorariosDisponiveisResponse = async (
   selectedDia: dayjs.Dayjs,
   inicio: number,
   fim: number,
+  timezoneOffsetEmHoras: number,
 ): Promise<
   {
     horario: number
@@ -63,18 +66,33 @@ const mountHorariosDisponiveisResponse = async (
     where: {
       user_id: user?.id,
       date: {
-        gte: selectedDia.set('hour', inicio).toDate(),
-        lte: selectedDia.set('hour', fim).toDate(),
+        gte: selectedDia
+          .set('hour', inicio)
+          .add(timezoneOffsetEmHoras, 'hours')
+          .toDate(),
+        lte: selectedDia
+          .set('hour', fim)
+          .add(timezoneOffsetEmHoras, 'hours')
+          .toDate(),
       },
     },
   })
+
+  const selectedDiaTimeZoneOffsetEmHoras =
+    selectedDia.toDate().getTimezoneOffset() / 60
 
   return horarios.map((horario) => ({
     horario,
     disponivel:
       !horariosAgendados.some(
-        (horarioAgendado) => horarioAgendado.date.getHours() === horario,
-      ) && !selectedDia.set('hour', horario).isBefore(new Date()),
+        (horarioAgendado) =>
+          horarioAgendado.date.getUTCHours() - timezoneOffsetEmHoras ===
+          horario,
+      ) &&
+      !selectedDia
+        .set('hour', horario)
+        .subtract(selectedDiaTimeZoneOffsetEmHoras, 'hours')
+        .isBefore(new Date()),
   }))
 }
 
@@ -83,6 +101,17 @@ export async function GET(
   { params: { username } }: { params: { username: string } },
 ) {
   const date = req.nextUrl.searchParams.get('date')
+  const timezoneOffset = req.nextUrl.searchParams.get('timezoneOffset')
+
+  if (!date || !timezoneOffset)
+    return NextResponse.json(
+      {},
+      {
+        status: HttpStatusCode.BadRequest,
+        statusText: 'date ou timezoneOffset não enviados.',
+      },
+    )
+
   const user = await prisma.user.findUnique({
     where: {
       username,
@@ -94,6 +123,11 @@ export async function GET(
   const selectedDia = dayjs(String(date))
   const validateSelectedDiaResult = validateSelectedDia(selectedDia)
   if (validateSelectedDiaResult?.error) return validateSelectedDiaResult.reponse
+
+  const timezoneOffsetEmHoras =
+    typeof timezoneOffset === 'string'
+      ? Number(timezoneOffset) / 60
+      : Number(timezoneOffset[0]) / 60
 
   const userDisponibilidade = await prisma.horario.findFirst({
     where: {
@@ -113,6 +147,7 @@ export async function GET(
       selectedDia,
       inicio,
       fim,
+      timezoneOffsetEmHoras,
     ),
   })
 }
