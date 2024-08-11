@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { SpinnerGap } from 'phosphor-react'
 import { useToast } from '@/shared/contexts/ToastContext'
 import { AgendamentoForm } from './components/AgendamentoForm'
+import { NextSeo } from 'next-seo'
 
 interface UserResponse {
   name: string
@@ -54,21 +55,24 @@ export default function Agendamento({
   }, [params, user, toast])
 
   return (
-    <AgendamentoContainer>
-      <AgendamentoHeader>
-        <Avatar src={user?.avatarUrl ?? ''} />
-        {user ? (
-          <>
-            <Heading>{user.name}</Heading>
-            <Text>{user.bio}</Text>
-          </>
-        ) : (
-          <SpinnerGap size={32} color="#FFF" />
-        )}
-      </AgendamentoHeader>
-      <main>
-        <AgendamentoForm></AgendamentoForm>
-      </main>
-    </AgendamentoContainer>
+    <>
+      <NextSeo title={`Agendar com ${user?.name} | Ignite Agenda`} />
+      <AgendamentoContainer>
+        <AgendamentoHeader>
+          <Avatar src={user?.avatarUrl ?? ''} />
+          {user ? (
+            <>
+              <Heading>{user.name}</Heading>
+              <Text>{user.bio}</Text>
+            </>
+          ) : (
+            <SpinnerGap size={32} color="#FFF" />
+          )}
+        </AgendamentoHeader>
+        <main>
+          <AgendamentoForm></AgendamentoForm>
+        </main>
+      </AgendamentoContainer>
+    </>
   )
 }

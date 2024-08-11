@@ -7,6 +7,7 @@ import { ToastContextProvider } from '@/shared/contexts/ToastContext'
 import '../lib/dayjs'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from '@/lib/react-query'
+import { DefaultSeo } from 'next-seo'
 const roboto = Roboto({ subsets: ['latin'], weight: ['400', '500', '700'] })
 export default function RootLayoutBody({
   children,
@@ -15,6 +16,14 @@ export default function RootLayoutBody({
   return (
     <html lang="pt-br">
       <body className={roboto.className}>
+        <DefaultSeo
+          openGraph={{
+            type: 'website',
+            locale: 'pt_BR',
+            url: 'https://www.ignite-agenda.pedroandrad1.com.br',
+            siteName: 'Ignite Agenda',
+          }}
+        />
         <QueryClientProvider client={queryClient}>
           <SessionProvider session={session}>
             <StitchesRegistry>

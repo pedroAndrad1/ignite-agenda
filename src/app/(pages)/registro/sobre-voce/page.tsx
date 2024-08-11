@@ -20,6 +20,7 @@ import { useSession } from 'next-auth/react'
 import { api } from '@/lib/axios'
 import { useRouter } from 'next/navigation'
 import { ErrorMessage } from '@/shared/components/ErrorMessage'
+import { NextSeo } from 'next-seo'
 
 const SobreVoceFormSchema = z.object({
   bio: z.string(),
@@ -48,34 +49,38 @@ export default function SobreVoce() {
   }
 
   return (
-    <MainRegistro>
-      <HeaderRegistro>
-        <Heading as={'h1'}>Sobre você</Heading>
-        <Text>Por último, uma breve descrição.</Text>
-        <MultiStep size={4} currentStep={4} />
-      </HeaderRegistro>
-      <SobreVoceBox
-        as="form"
-        onSubmit={handleSubmit(handleSobreVoceFormSubmit)}
-      >
-        <Text>Foto de perfil</Text>
-        <Avatar src={data?.user.avatar_url} alt="Foto de perfil" />
-        <label>
-          <Text>Sobre você</Text>
-          <TextArea {...register('bio')} />
-          {errors.bio ? (
-            <ErrorMessage>{errors.bio.message}</ErrorMessage>
-          ) : (
-            <FormAnnotation>
-              Fale um pouco sobre você. Isto será exibido em sua página pessoal.
-            </FormAnnotation>
-          )}
-        </label>
-        <Button type="submit" disabled={isSubmitting}>
-          Finalizar
-          <ArrowRight />
-        </Button>
-      </SobreVoceBox>
-    </MainRegistro>
+    <>
+      <NextSeo title="Atualize seu perfil | Ignite Agenda" noindex />
+      <MainRegistro>
+        <HeaderRegistro>
+          <Heading as={'h1'}>Sobre você</Heading>
+          <Text>Por último, uma breve descrição.</Text>
+          <MultiStep size={4} currentStep={4} />
+        </HeaderRegistro>
+        <SobreVoceBox
+          as="form"
+          onSubmit={handleSubmit(handleSobreVoceFormSubmit)}
+        >
+          <Text>Foto de perfil</Text>
+          <Avatar src={data?.user.avatar_url} alt="Foto de perfil" />
+          <label>
+            <Text>Sobre você</Text>
+            <TextArea {...register('bio')} />
+            {errors.bio ? (
+              <ErrorMessage>{errors.bio.message}</ErrorMessage>
+            ) : (
+              <FormAnnotation>
+                Fale um pouco sobre você. Isto será exibido em sua página
+                pessoal.
+              </FormAnnotation>
+            )}
+          </label>
+          <Button type="submit" disabled={isSubmitting}>
+            Finalizar
+            <ArrowRight />
+          </Button>
+        </SobreVoceBox>
+      </MainRegistro>
+    </>
   )
 }
