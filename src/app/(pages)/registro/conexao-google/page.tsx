@@ -41,11 +41,7 @@ export default function ConexaoGoogle() {
               <Check />
             </Button>
           ) : (
-            <Button
-              size={'sm'}
-              variant={'secondary'}
-              onClick={() => signIn('google')}
-            >
+            <Button size={'sm'} onClick={() => signIn('google')}>
               Conectar
               <ArrowRight />
             </Button>
