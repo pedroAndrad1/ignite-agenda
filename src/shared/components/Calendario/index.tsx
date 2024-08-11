@@ -14,7 +14,7 @@ import dayjs from 'dayjs'
 import { Tooltip } from '@pedroandrad1/react'
 
 interface DiaDaSemana {
-  dia: dayjs.Dayjs
+  dia?: dayjs.Dayjs
   disabled: boolean
 }
 interface CalendarioSemana {
@@ -50,14 +50,12 @@ export function Calendario({
     const sobraMesAnterior = Array.from({
       length: primeiroDiaPrimeiraSemanaDoMes,
     })
-      .map((_, i) => dataAtual.subtract(i + 1, 'day'))
-      .reverse()
 
     const ultimoDiaDoMes = dataAtual.set('date', dataAtual.daysInMonth())
     const ultimoDiaUltimaSemanaDoMes = ultimoDiaDoMes.get('day')
     const sobraProximoMes = Array.from({
       length: 7 - (ultimoDiaUltimaSemanaDoMes + 1),
-    }).map((_, i) => ultimoDiaDoMes.add(i + 1, 'day'))
+    })
 
     return [sobraMesAnterior, sobraProximoMes]
   }, [dataAtual])
@@ -89,7 +87,7 @@ export function Calendario({
     )
     const [sobraMesAnterior, sobraProximoMes] = calcSobrasDoMes()
     const diasDoMesAndSobras: DiaDaSemana[] = [
-      ...sobraMesAnterior.map((dia) => ({ dia, disabled: true })),
+      ...sobraMesAnterior.map(() => ({ disabled: true })),
       ...diasDoMes.map((dia) => ({
         dia,
         disabled:
@@ -97,7 +95,7 @@ export function Calendario({
           (diasDaSemanaIndisponiveis || []).includes(dia.get('day')) ||
           (diasDoMesIndisponiveis || []).includes(dia.get('date')),
       })),
-      ...sobraProximoMes.map((dia) => ({ dia, disabled: true })),
+      ...sobraProximoMes.map(() => ({ disabled: true })),
     ]
 
     return convertDiasToSemanasDoMes(diasDoMesAndSobras)
@@ -145,19 +143,23 @@ export function Calendario({
             <tbody>
               {semanasDoCalendario.map(({ semana, diasDaSemana }) => (
                 <tr key={semana}>
-                  {diasDaSemana.map(({ dia, disabled }) => (
-                    <td key={dia.toString()}>
-                      <Tooltip
-                        trigger={
-                          <CalendarioDay
-                            disabled={disabled}
-                            onClick={() => onSelectedDia(dia.toDate())}
-                          >
-                            {dia.get('date')}
-                          </CalendarioDay>
-                        }
-                        content={`${dia.format('DD[ de ]MMMM')} - ${disabled ? 'Indisponível' : 'Disponível'}`}
-                      />
+                  {diasDaSemana.map(({ dia, disabled }, i) => (
+                    <td key={`${i}__dia_calendario`}>
+                      {dia ? (
+                        <Tooltip
+                          trigger={
+                            <CalendarioDay
+                              disabled={disabled}
+                              onClick={() => onSelectedDia(dia.toDate())}
+                            >
+                              {dia?.get('date')}
+                            </CalendarioDay>
+                          }
+                          content={`${dia?.format('DD[ de ]MMMM')} - ${disabled ? 'Indisponível' : 'Disponível'}`}
+                        />
+                      ) : (
+                        <CalendarioDay disabled={disabled}></CalendarioDay>
+                      )}
                     </td>
                   ))}
                 </tr>
