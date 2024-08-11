@@ -11,6 +11,7 @@ import {
 import { getDiaDaSemana } from '@/shared/utils/getDiaDaSemana'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
+import { Tooltip } from '@pedroandrad1/react'
 
 interface DiaDaSemana {
   dia: dayjs.Dayjs
@@ -146,12 +147,17 @@ export function Calendario({
                 <tr key={semana}>
                   {diasDaSemana.map(({ dia, disabled }) => (
                     <td key={dia.toString()}>
-                      <CalendarioDay
-                        disabled={disabled}
-                        onClick={() => onSelectedDia(dia.toDate())}
-                      >
-                        {dia.get('date')}
-                      </CalendarioDay>
+                      <Tooltip
+                        trigger={
+                          <CalendarioDay
+                            disabled={disabled}
+                            onClick={() => onSelectedDia(dia.toDate())}
+                          >
+                            {dia.get('date')}
+                          </CalendarioDay>
+                        }
+                        content={`${dia.format('DD[ de ]MMMM')} - ${disabled ? 'Indisponível' : 'Disponível'}`}
+                      />
                     </td>
                   ))}
                 </tr>
