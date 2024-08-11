@@ -27,7 +27,6 @@ import { convertStringHoraToMinutoNumber } from '@/shared/utils/convertStringHor
 import { api } from '@/lib/axios'
 import { useToast } from '@/shared/contexts/ToastContext'
 import { useRouter } from 'next/navigation'
-import { NextSeo } from 'next-seo'
 
 const DisponibilidadeFormSchema = z.object({
   horarios: z
@@ -123,66 +122,63 @@ export default function Disponibilidade() {
   }, [errors, toast])
 
   return (
-    <>
-      <NextSeo title="Selecione sua disponibilidade | Ignite Agends" noindex />
-      <MainRegistro>
-        <HeaderRegistro>
-          <Heading as={'h1'}>Quase lá</Heading>
-          <Text>
-            Defina o intervalo de horários que você está disponível em cada dia
-            da semana.
-          </Text>
-          <MultiStep size={4} currentStep={3} />
-        </HeaderRegistro>
-        <DisponibilidadeBox>
-          <DisponibilidadeForm
-            as="form"
-            onSubmit={handleSubmit(handleDisponibilidadeFormSubmit)}
-          >
-            {fields.map((field, index) => {
-              return (
-                <DisponibilidadeFormItem key={field.id}>
-                  <DayInputContainer>
-                    <Controller
-                      name={`horarios.${index}.enabled`}
-                      control={control}
-                      render={({ field }) => (
-                        <Checkbox
-                          onCheckedChange={(checked) =>
-                            field.onChange(checked === true)
-                          }
-                          checked={field.value}
-                        />
-                      )}
-                    />
-                    <Text>{diasDaSemana[field.diaDaSemana]}</Text>
-                  </DayInputContainer>
-                  <HoursInputContainer>
-                    <TextInput
-                      containerProps={{ size: 'sm' }}
-                      type="time"
-                      step={60}
-                      {...register(`horarios.${index}.inicio`)}
-                      disabled={!horarios[index].enabled}
-                    />
-                    <TextInput
-                      containerProps={{ size: 'sm' }}
-                      type="time"
-                      step={60}
-                      {...register(`horarios.${index}.fim`)}
-                      disabled={!horarios[index].enabled}
-                    />
-                  </HoursInputContainer>
-                </DisponibilidadeFormItem>
-              )
-            })}
-            <Button type="submit" disabled={isSubmitting}>
-              Próximo passo
-              <ArrowRight />
-            </Button>
-          </DisponibilidadeForm>
-        </DisponibilidadeBox>
-      </MainRegistro>
-    </>
+    <MainRegistro>
+      <HeaderRegistro>
+        <Heading as={'h1'}>Quase lá</Heading>
+        <Text>
+          Defina o intervalo de horários que você está disponível em cada dia da
+          semana.
+        </Text>
+        <MultiStep size={4} currentStep={3} />
+      </HeaderRegistro>
+      <DisponibilidadeBox>
+        <DisponibilidadeForm
+          as="form"
+          onSubmit={handleSubmit(handleDisponibilidadeFormSubmit)}
+        >
+          {fields.map((field, index) => {
+            return (
+              <DisponibilidadeFormItem key={field.id}>
+                <DayInputContainer>
+                  <Controller
+                    name={`horarios.${index}.enabled`}
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        onCheckedChange={(checked) =>
+                          field.onChange(checked === true)
+                        }
+                        checked={field.value}
+                      />
+                    )}
+                  />
+                  <Text>{diasDaSemana[field.diaDaSemana]}</Text>
+                </DayInputContainer>
+                <HoursInputContainer>
+                  <TextInput
+                    containerProps={{ size: 'sm' }}
+                    type="time"
+                    step={60}
+                    {...register(`horarios.${index}.inicio`)}
+                    disabled={!horarios[index].enabled}
+                  />
+                  <TextInput
+                    containerProps={{ size: 'sm' }}
+                    type="time"
+                    step={60}
+                    {...register(`horarios.${index}.fim`)}
+                    disabled={!horarios[index].enabled}
+                  />
+                </HoursInputContainer>
+              </DisponibilidadeFormItem>
+            )
+          })}
+          <Button type="submit" disabled={isSubmitting}>
+            Próximo passo
+            <ArrowRight />
+          </Button>
+        </DisponibilidadeForm>
+      </DisponibilidadeBox>
+    </MainRegistro>
   )
 }

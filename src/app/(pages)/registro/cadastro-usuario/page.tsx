@@ -18,7 +18,6 @@ import { api } from '@/lib/axios'
 import { MainRegistro } from '../components/MainCadastroUsuario'
 import { HeaderRegistro } from '../components/HeaderRegistro'
 import { useToast } from '@/shared/contexts/ToastContext'
-import { NextSeo } from 'next-seo'
 
 const CadastroUsuarioFormSchema = z.object({
   username: z
@@ -63,44 +62,41 @@ export default function CadastroUsuario() {
   }
 
   return (
-    <>
-      <NextSeo title="Conecte sua agenda do Google | Ignite Agenda" noindex />
-      <MainRegistro>
-        <HeaderRegistro>
-          <Heading as={'h1'}>Bem-vindo ao ignite call</Heading>
-          <Text>
-            Precisamos de algumas informações para criar seu perfil! Ah, você
-            pode editar essas informações depois.
-          </Text>
-          <MultiStep size={4} currentStep={1} />
-        </HeaderRegistro>
-        <FormCadastroUsuario
-          as="form"
-          onSubmit={handleSubmit(handleFormCadastroUsuario)}
-        >
-          <label>
-            <Text>Nome de usuário</Text>
-            <TextInput
-              prefix={GLOBAL_CONSTANTS.userNamePrefix}
-              {...register('username')}
-            />
-            {errors.username ? (
-              <ErrorMessage>{errors.username.message}</ErrorMessage>
-            ) : null}
-          </label>
-          <label>
-            <Text>Nome completo:</Text>
-            <TextInput {...register('nomeCompleto')} />
-            {errors.nomeCompleto ? (
-              <ErrorMessage>{errors.nomeCompleto.message}</ErrorMessage>
-            ) : null}
-          </label>
-          <Button type="submit" disabled={isSubmitting}>
-            Próximo passo
-            <ArrowRight />
-          </Button>
-        </FormCadastroUsuario>
-      </MainRegistro>
-    </>
+    <MainRegistro>
+      <HeaderRegistro>
+        <Heading as={'h1'}>Bem-vindo ao ignite call</Heading>
+        <Text>
+          Precisamos de algumas informações para criar seu perfil! Ah, você pode
+          editar essas informações depois.
+        </Text>
+        <MultiStep size={4} currentStep={1} />
+      </HeaderRegistro>
+      <FormCadastroUsuario
+        as="form"
+        onSubmit={handleSubmit(handleFormCadastroUsuario)}
+      >
+        <label>
+          <Text>Nome de usuário</Text>
+          <TextInput
+            prefix={GLOBAL_CONSTANTS.userNamePrefix}
+            {...register('username')}
+          />
+          {errors.username ? (
+            <ErrorMessage>{errors.username.message}</ErrorMessage>
+          ) : null}
+        </label>
+        <label>
+          <Text>Nome completo:</Text>
+          <TextInput {...register('nomeCompleto')} />
+          {errors.nomeCompleto ? (
+            <ErrorMessage>{errors.nomeCompleto.message}</ErrorMessage>
+          ) : null}
+        </label>
+        <Button type="submit" disabled={isSubmitting}>
+          Próximo passo
+          <ArrowRight />
+        </Button>
+      </FormCadastroUsuario>
+    </MainRegistro>
   )
 }
